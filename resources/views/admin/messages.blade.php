@@ -6,7 +6,7 @@
         position: absolute;
         left: 10px;
         right: 10px;
-        top: 236px;
+        top: 290px;
         width: calc(100% - 16px);
         height: 54px;
         background-color: #636363;
@@ -37,6 +37,7 @@
     }
 </style>
 <link rel="stylesheet" href="../css/messages.css">
+<link rel="stylesheet" href="../css/add_uniform.css">
 <div id="nav-bar">
     <input id="nav-toggle" type="checkbox" />
     <div id="nav-header"><a id="nav-title" target="_blank">ADMIN</a>
@@ -51,11 +52,11 @@
                 </svg><span>Dashboard</span></a>
         </div>
 
-        <div class="nav-button">
-            <a href="{{ url('admin-reservation') }}" style="text-decoration: none; color: inherit;">
+         <div class="nav-button">
+            <a href="{{ url('admin-reservation') }}" style="text-decoration: none; color: inherit;" id="reservations-link">
                 <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
                     <path fill="none" stroke="#FFBD2E" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.5 21H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6M16 3v4M8 3v4m-4 4h16m-5 8l2 2l4-4" />
-                </svg></i><span>Reservations</span>
+                </svg></i><span>Reservations</span><span id="reservation-badge" class="badge bg-warning text-dark" style="display: none;">New</span>
             </a>
         </div>
 
@@ -66,7 +67,13 @@
                     <path fill="#ffbd2e" d="M9 12h6v2H9z" />
                 </svg><span>Inventory</span></a>
         </div>
+        <div class="nav-button"><a href="{{ url('wishlist') }}" style="text-decoration: none; color: inherit;">
 
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
+                    <path fill="none" stroke="#ffbd2e" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19.071 13.142L13.414 18.8a2 2 0 0 1-2.828 0l-5.657-5.657A5 5 0 1 1 12 6.072a5 5 0 0 1 7.071 7.07" />
+                </svg>
+                </svg><span>Wishlist</span></a>
+        </div>
         <div class="nav-button"><a href="{{ url('announcement') }}" style="text-decoration: none; color: inherit;">
 
                 <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
@@ -115,7 +122,7 @@
     @forelse($data as $d)
     <form action="{{ url('reply/' . $d->id) }}" method="post">
         @csrf
-        <div class="message unread" data-id="{{$d->id}}" data-email="{{$d->email}}" data-name="{{$d->name}}">
+        <div class="message" data-id="{{$d->id}}" data-email="{{$d->email}}" data-name="{{$d->name}}">
 
             <div class="message-content">
                 <div class="message-header">
@@ -129,9 +136,9 @@
                 <input type="hidden" name="user_message" value="{{$d->message}}">
 
                 <div class="reply-btn">Reply</div>
-                <div class="reply-wrapper">
+                <div class="reply-wrapper" style="display:none;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
-                        <path fill="#d39817" d="M9 16h7.2l-2.6 2.6L15 20l5-5l-5-5l-1.4 1.4l2.6 2.6H9c-2.2 0-4-1.8-4-4s1.8-4 4-4h2V4H9c-3.3 0-6 2.7-6 6s2.7 6 6 6" />
+                        <path fill="#357ac8" d="M9 16h7.2l-2.6 2.6L15 20l5-5l-5-5l-1.4 1.4l2.6 2.6H9c-2.2 0-4-1.8-4-4s1.8-4 4-4h2V4H9c-3.3 0-6 2.7-6 6s2.7 6 6 6" />
                     </svg>
                     <div class="admin-reply">
 
@@ -146,14 +153,21 @@
 
         <div id="reply-modal" class="modal">
             <div class="modal-content">
-                <span class="close-btn">&times;</span>
-                <h2>Reply to <span id="recipient-name"></span></h2>
+                <span class="close-btn" style="color: var(--navbar-light-primary)">&times;</span>
+                <h5 style="color: var(--navbar-light-primary)">Reply to <span id="recipient-name"></span></h5>
                 <div id="reply-form">
 
                     <input type="hidden" id="recipient-email" name="email">
-                    <textarea id="reply-message" name="message" placeholder="Type your reply here..." required></textarea>
-                    <input type="number" id="message-id" name="message_id" value="{{ $d->id }}"></input>
-                    <button type="submit">Send Reply</button>
+
+                    <div class="input-wrapper mb-3">
+                        <label class="text" for="message" class="form-label">Message</label>
+                        <textarea class="input w-100" id="reply-message" rows="3" placeholder="Type your reply here..." name="message"></textarea>
+                    </div>
+                    <!-- <textarea id="reply-message" name="message" placeholder="Type your reply here..." required></textarea> -->
+                    <input type="hidden" id="message-id" name="message_id" value="{{ $d->id }}"></input>
+                    <div class="btn-container">
+                        <button type="submit" class="send-reply">Send Reply</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -183,13 +197,21 @@
 </div>
 
 <script>
-    document.querySelectorAll('.message').forEach(message => {
-        message.addEventListener('click', () => {
-            message.classList.remove('unread');
-            message.classList.add('read');
+    document.addEventListener("DOMContentLoaded", function() {
+        // Select all reply-wrapper elements
+        var replyWrappers = document.querySelectorAll('.reply-wrapper');
+
+        // Iterate through each wrapper
+        replyWrappers.forEach(function(wrapper) {
+            // Get the span text inside the current wrapper
+            var replyText = wrapper.querySelector('.admin-reply span').innerText.trim();
+
+            // If the span has content, display the wrapper
+            if (replyText) {
+                wrapper.style.display = 'flex';
+            }
         });
     });
-
 
     // script.js
     // script.js
@@ -234,28 +256,7 @@
             }
         });
 
-        // Handle the reply form submission
-        // replyForm.addEventListener('submit', event => {
-        //     event.preventDefault();
 
-        //     const email = recipientEmail.value;
-        //     const message = replyMessage.value;
-        //     const messageId = messageIdInput.value;
-        //     // Add the reply below the user's message
-        //     // if (currentMessageElement) {
-        //     //     const replySection = currentMessageElement.querySelector('.admin-reply');
-        //     //     replySection.innerHTML = `<span>LSPU BAO replied:</span> ${message}`;
-        //     //     currentMessageElement.classList.remove('unread');
-        //     //     currentMessageElement.classList.add('read');
-        //     // }
-
-        //     alert(`Reply sent to ${email}:\n\n${message}`);
-        //     replyForm.action = `/reply/${messageId}`;
-
-        //     // Reset form and close modal
-        //     replyForm.reset();
-        //     modal.style.display = 'none';
-        // });
 
     });
 
@@ -282,5 +283,10 @@
         }
     });
 </script>
-
+@if(session('success'))
+<script>
+    // Show a simple alert message
+    alert("Reply sent successfuly");
+</script>
+@endif
 @endsection

@@ -6,7 +6,7 @@
         position: absolute;
         left: 10px;
         right: 10px;
-        top: 290px;
+        top: 344px;
         width: calc(100% - 16px);
         height: 54px;
         background-color: #636363;
@@ -60,6 +60,10 @@
     #qr-canvas {
         transform: scaleX(-1);
     }
+
+    a {
+        text-decoration: none;
+    }
 </style>
 <link rel="stylesheet" href="../css/admin_announcement.css">
 <div id="nav-bar">
@@ -77,10 +81,10 @@
         </div>
 
         <div class="nav-button">
-            <a href="{{ url('admin-reservation') }}" style="text-decoration: none; color: inherit;">
+            <a href="{{ url('admin-reservation') }}" style="text-decoration: none; color: inherit;" id="reservations-link">
                 <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
                     <path fill="none" stroke="#FFBD2E" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.5 21H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6M16 3v4M8 3v4m-4 4h16m-5 8l2 2l4-4" />
-                </svg></i><span>Reservations</span>
+                </svg></i><span>Reservations</span><span id="reservation-badge" class="badge bg-warning text-dark" style="display: none;">New</span>
             </a>
         </div>
 
@@ -91,7 +95,13 @@
                     <path fill="#ffbd2e" d="M9 12h6v2H9z" />
                 </svg><span>Inventory</span></a>
         </div>
+        <div class="nav-button"><a href="{{ url('wishlist') }}" style="text-decoration: none; color: inherit;">
 
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
+                    <path fill="none" stroke="#ffbd2e" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19.071 13.142L13.414 18.8a2 2 0 0 1-2.828 0l-5.657-5.657A5 5 0 1 1 12 6.072a5 5 0 0 1 7.071 7.07" />
+                </svg>
+                </svg><span>Wishlist</span></a>
+        </div>
         <div class="nav-button"><a href="{{ url('announcement') }}" style="text-decoration: none; color: inherit;">
 
                 <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
@@ -146,12 +156,13 @@
         <table id="reservation-table" class="table">
             <thead>
                 <tr>
-                    <th style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;">Type</th>
-                    <th>Variation</th>
-                    <th>Size</th>
-                    <th>Reservation Date</th>
-                    <th>Quantity</th>
-                    <th style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">Price</th>
+                    <th style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;">TYPE</th>
+                    <th>VARIATION</th>
+                    <th>SIZE</th>
+                    <th>RESERVATION DATE</th>
+                    <th>QUANTITY</th>
+                    <th>PRICE</th>
+                    <th style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">ACTION</th>
                 </tr>
             </thead>
             <tbody>
@@ -229,6 +240,13 @@
                                 <td>${reservation.reservation_date}</td>
                                 <td>${reservation.qty}</td>
                                 <td>₱${reservation.subTotal}</td>
+                                <td style=" width:90px;">
+                                    <div class="action">
+                                        <div class="ed px-3" style="background-color: #ffd37b">
+                                         <button class="confirm-btn" data-id="${reservation.id}" style="background-color: #ffd37b; border: none; padding: 5px 10px; color: #936d1b; cursor: pointer;">Confirm</button>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
                         `;
                         reservationTableBody.insertAdjacentHTML('beforeend', row);
@@ -240,7 +258,7 @@
                             <tr>
                                 <td style="text-align: center; vertical-align: middle;">
                                     <img src="../img/no_data.svg" alt="No Data" class="nodata-image" style="max-width: 100px; height: auto; margin-top: 50px;">
-                                    <p style="margin-top: 10px; color: #888;">No pending reservation.</p>
+                                    <p style="margin-top: 10px; color: #888;">No data.</p>
                                 </td>
                             </tr>
                         </table>
@@ -252,6 +270,33 @@
                 console.error('Error fetching reservation details:', error);
             });
     }
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('confirm-btn')) {
+            const reservationId = event.target.getAttribute('data-id');
+
+            // Send AJAX request to confirm the reservation
+            fetch(`/paid-qr-reservation/${reservationId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}', // Include CSRF token for security
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the row to reflect the confirmation
+                        const row = event.target.closest('tr');
+                        row.querySelector('.action').innerHTML = '<span style="color: #4BB543;">Confirmed</span>';
+                    } else {
+                        alert('Failed to confirm the reservation. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error confirming reservation:', error);
+                });
+        }
+    });
 </script>
 @if(session('success'))
 <script>

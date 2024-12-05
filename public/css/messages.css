@@ -14,22 +14,22 @@ h1 {
 }
 
 /* Styles for Unread Messages */
-.message.unread {
+.message {
   background-color: transparent;
   border: 2px solid #636363;
   font-weight: 800;
   cursor: pointer;
 }
-.message.unread h3{
+.message h3{
   font-weight: 800;
 }
 
 
 /* Styles for Read Messages */
-.message.read {
+/* .message.read {
   background-color: #f0f0f5;
   border: 1px solid #dcdcdc;
-}
+} */
 
 
 
@@ -79,7 +79,7 @@ h1 {
 }
 
 .modal-content {
-  background: #ffffff;
+  background: var(--navbar-dark-secondary);
   padding: 20px;
   border-radius: 8px;
   width: 400px;
@@ -96,25 +96,26 @@ h1 {
 }
 
 #reply-form textarea {
-  width: 100%;
-  height: 100px;
-  margin: 10px 0;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+  color:#ffffff;
 }
 
 #reply-form button {
-  padding: 10px 15px;
-  background-color: #4a90e2;
+  padding: 5px 15px;
+ 
+  background-color: var(--primary-color);
+  
   color: #ffffff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 }
-
+.btn-container{
+ display: flex;
+ justify-content: flex-end;
+}
 #reply-form button:hover {
-  background-color: #357ac8;
+  background-color: #eebe58;
+  color: #ebe5e5;
 }
 
 
@@ -129,7 +130,7 @@ h1 {
 .admin-reply {
   margin-top: 10px;
   padding: 10px;
-  background-color: #636363;
+  background-color: transparent;
   border-radius: 8px;
   font-size: 14px;
   color: #333;

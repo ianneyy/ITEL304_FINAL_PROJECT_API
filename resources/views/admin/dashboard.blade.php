@@ -55,10 +55,10 @@
         </div>
 
         <div class="nav-button">
-            <a href="{{ url('admin-reservation') }}" style="text-decoration: none; color: inherit;">
+            <a href="{{ url('admin-reservation') }}" style="text-decoration: none; color: inherit;" id="reservations-link">
                 <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
                     <path fill="none" stroke="#FFBD2E" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.5 21H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6M16 3v4M8 3v4m-4 4h16m-5 8l2 2l4-4" />
-                </svg></i><span>Reservations</span>
+                </svg></i><span>Reservations</span><span id="reservation-badge" class="badge bg-warning text-dark" style="display: none;">New</span>
             </a>
         </div>
 
@@ -69,7 +69,13 @@
                     <path fill="#ffbd2e" d="M9 12h6v2H9z" />
                 </svg><span>Inventory</span></a>
         </div>
+        <div class="nav-button"><a href="{{ url('wishlist') }}" style="text-decoration: none; color: inherit;">
 
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
+                    <path fill="none" stroke="#ffbd2e" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19.071 13.142L13.414 18.8a2 2 0 0 1-2.828 0l-5.657-5.657A5 5 0 1 1 12 6.072a5 5 0 0 1 7.071 7.07" />
+                </svg>
+                </svg><span>Wishlist</span></a>
+        </div>
         <div class="nav-button"><a href="{{ url('announcement') }}" style="text-decoration: none; color: inherit;">
 
                 <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
@@ -147,8 +153,12 @@
                     </svg>
                 </div>
                 <div class="rsv">
-                    <h4>Low Stock</h4>
-                    <p>5</p>
+                    @if($lowestStock !== null)
+                    <h4>Low Stock: {{ $lowestStockVariation->variation_type }} - {{$lowestStockSize}}</h4>
+                    <p>{{ $lowestStock }} </p>
+                    @else
+                    <p>No stock available.</p>
+                    @endif
                 </div>
             </div>
         </div>
@@ -156,9 +166,27 @@
 
     <section class="content">
         <div class="chart">
-            <h5>Reservations Over Time</h5>
+            
             <!-- This would be a chart (e.g., using Chart.js or other JS library) -->
-            <div class="chart-box">Chart Area</div>
+            <div class="chart-box">
+                <h5>Daily Reservation</h5>
+                <canvas id="reservationChart"></canvas>
+            </div>
+             <div class="chart-box">
+                 
+                <h5>Payment By Day</h5>
+
+                 <h6 id="dateRange" style="color: var(--navbar-light-secondary);">
+                        As of {{ \Carbon\Carbon::parse($startOfWeek)->format('M j, Y') }} - {{ \Carbon\Carbon::parse($today)->format('M j, Y') }}
+                </h6>
+                <canvas id="dayChart" style=" margin-top: 30px; padding:10px"></canvas>
+             
+            </div> <div class="chart-box">
+                 
+                <h5>Payment By Month</h5>
+                <canvas id="monthChart" style=" margin-top: 30px; padding:10px""></canvas>
+             
+            </div>
         </div>
 
         <div class="recent-activity">
@@ -196,7 +224,138 @@
     </section>
 
 </div>
+
+ 
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="text/javascript">
+
+    var pendingCount = @json($pendingDataCountToday);
+    var completedCount = @json($completedDataCountToday);
+
+    var labels = ['Pending', 'Completed'];
+    var dataValues = [pendingCount, completedCount];
+    // Use `reservationData` for the chart
+    const reservationCtx  = document.getElementById('reservationChart').getContext('2d');
+    const reservationConfig  = {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Reservation Status',
+                data: dataValues,
+                borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 189, 46, 1)'],
+                backgroundColor: ['rgba(54, 162, 235, 0.2)', 'rgba(255, 189, 46, 0.2)'], 
+
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#ffffff' 
+                    }
+                }
+            }
+        }
+    };
+
+    // Initialize the Chart.js instance
+    new Chart(reservationCtx , reservationConfig);
+</script>
+
 <script>
+    var dayChartctx = document.getElementById('dayChart').getContext('2d');
+
+    
+
+    var paymentsByDayData = @json($paymentsByDay);
+    var payments = new Array(7).fill(0); 
+
+    
+
+            // Fill the payments array with the corresponding total_payment for each month
+            paymentsByDayData.forEach(function(payment) {
+                payments[payment.day_of_week - 1] = payment.total_payment; 
+
+               
+            });
+
+
+
+    var dayChart = new Chart(dayChartctx, {
+        type: 'bar',
+        data: {
+            labels: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], // Days of the week
+            datasets: [{
+                label: 'Total Payment by Day',
+                data: payments, // Dynamically insert the total payments for each day
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                     ticks: {
+                        callback: function(value) {
+                            return '₱ ' + value.toLocaleString();  // Add peso sign and format the number with commas
+                        }
+                    }
+                }
+            }
+        }
+    });
+    
+</script>
+<script>
+    var monthChartctx = document.getElementById('monthChart').getContext('2d');
+
+    console.log(@json($paymentsByMonth->pluck('total_payment')));
+    var paymentsByMonthData = @json($paymentsByMonth);
+        var payments = new Array(12).fill(0);  // Initialize an array with 12 zeros (for 12 months)
+
+        // Fill the payments array with the corresponding total_payment for each month
+        paymentsByMonthData.forEach(function(payment) {
+            payments[payment.month - 1] = payment.total_payment;  // months are 1-indexed, so subtract 1 for zero-indexed array
+        });
+    var monthChart = new Chart(monthChartctx, {
+        type: 'bar',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], // Months
+            datasets: [{
+                label: 'Total Payment by Month' ,
+                data:  payments, // Dynamically insert the total payments for each month
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                     ticks: {
+                        callback: function(value) {
+                            return '₱ ' + value.toLocaleString();  // Add peso sign and format the number with commas
+                        }
+                    }
+
+                }
+            }
+        }
+    });
+</script>
+<script>
+    // Declare `reservationData` only once
+
+
     // Get the checkbox and container elements
     const navToggle = document.getElementById('nav-toggle');
     const container = document.querySelector('.container');

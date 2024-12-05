@@ -19,6 +19,8 @@
     position: absolute;
     top: 20px;
     height: auto;
+
+
     left: var(--navbar-width);
     /* Adjust left based on sidebar width */
     transition: width 0.3s ease, left 0.3s ease;
@@ -53,13 +55,13 @@
         </svg><span>Dashboard</span></a>
     </div>
 
-    <div class="nav-button">
-      <a href="{{ url('admin-reservation') }}" style="text-decoration: none; color: inherit;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
-          <path fill="none" stroke="#FFBD2E" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.5 21H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6M16 3v4M8 3v4m-4 4h16m-5 8l2 2l4-4" />
-        </svg></i><span>Reservations</span>
-      </a>
-    </div>
+     <div class="nav-button">
+            <a href="{{ url('admin-reservation') }}" style="text-decoration: none; color: inherit;" id="reservations-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
+                    <path fill="none" stroke="#FFBD2E" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.5 21H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6M16 3v4M8 3v4m-4 4h16m-5 8l2 2l4-4" />
+                </svg></i><span>Reservations</span><span id="reservation-badge" class="badge bg-warning text-dark" style="display: none;">New</span>
+            </a>
+        </div>
 
     <div class="nav-button"><a href="{{ url('inventory') }}" style="text-decoration: none; color: inherit;">
 
@@ -68,7 +70,13 @@
           <path fill="#ffbd2e" d="M9 12h6v2H9z" />
         </svg><span style="color: #FFBD2E;">Inventory</span></a>
     </div>
+    <div class="nav-button"><a href="{{ url('wishlist') }}" style="text-decoration: none; color: inherit;">
 
+        <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
+          <path fill="none" stroke="#ffbd2e" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19.071 13.142L13.414 18.8a2 2 0 0 1-2.828 0l-5.657-5.657A5 5 0 1 1 12 6.072a5 5 0 0 1 7.071 7.07" />
+        </svg>
+        </svg><span>Wishlist</span></a>
+    </div>
     <div class="nav-button"><a href="{{ url('announcement') }}" style="text-decoration: none; color: inherit;">
 
         <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
@@ -181,31 +189,7 @@
 
     <div id="variation-section">
 
-      <!-- <div class="variation-group my-4 p-3"> -->
-      <!-- <div class="input-wrapper w-25  mb-4">
-          <label class="text" for="variation-type" class="form-label">Variation Type</label>
-          <input class="input w-100" type="text" class=" mb-2" name="variations[0][variation-type]" placeholder="Variation type" required>
-        </div> -->
 
-      <!-- <label for="sizes" class="form-label">Sizes and Stock</label> -->
-      <!-- <div class="sizes  mb-4"> -->
-      <!-- <div class="size-stock-container ">
-            <div class="input-wrapper w-auto">
-              <label class="text" for="sizes" class="form-label">Size</label>
-              <input class="input" type="text" class=" mb-2" name="variations[0][sizes][]" placeholder="Size">
-            </div>
-            <div class="input-wrapper w-auto">
-              <label class="text" for="sizes" class="form-label">Stock</label>
-              <input class="input" type="number" class=" mb-2" name="variations[0][stock][]" placeholder="Stock" min="0">
-            </div> -->
-      <!-- <div class="remove">
-              <button type="button" class="delete-size-stock btn"><i class="fa-solid fa-x" style="color: #f58a8a"></i></button>
-            </div> -->
-      <!-- </div> -->
-      <!-- </div> -->
-
-      <!-- <button type="button" class="btn btn-secondary add-size">Add More Sizes</button> -->
-      <!-- </div> -->
     </div>
     <div class="variation-wrapper my-4 p-3">
       <h5>Variants</h5>
@@ -214,7 +198,9 @@
     </div>
 
     <!-- <button type="button" class="btn btn-secondary hide-more-variation" id="add-variation" style="display: none;">Add More Variations</button> -->
-    <button type="submit" class="btn mt-3" style="background-color:var(--primary-color)">Submit</button>
+    <div class="submit-btn">
+      <button type="submit" class="btn mt-3" style="background-color:var(--primary-color); color: #F9F6EE">Submit</button>
+    </div>
   </form>
 
 
@@ -232,16 +218,16 @@
     // Inner HTML for the variation group
     variationGroup.innerHTML = `
        <div class="variation-input">
-      <div class="input-wrapper w-25 mb-4">
-        <label class="text" for="variation-type" class="form-label">Variation Name</label>
-        <input class="input w-100" type="text" name="variations[${index}][variation-type]" placeholder="Variation Name" required>
+          <div class="input-wrapper w-25 mb-4">
+            <label class="text" for="variation-type" class="form-label">Variation Name</label>
+            <input class="input w-100" type="text" name="variations[${index}][variation-type]" placeholder="Variation Name" required>
+          </div>
+          <div class="remove">
+              <button  type="button" class="delete-variation btn">
+                  <i class="fa-solid fa-x" style="color: #f58a8a"></i>
+              </button>
+          </div>
       </div>
-        <div class="remove">
-            <button  type="button" class="delete-variation btn">
-                <i class="fa-solid fa-x" style="color: #f58a8a"></i>
-            </button>
-        </div>
-        </div>
 
       <div class="sizes mb-4">
         <div class="size-stock-container w-50">
@@ -299,89 +285,5 @@
     // Event listener for deleting the variation
 
   });
-
-
-  // function gatherTags() {
-  //   const departments = [];
-
-  //   document.querySelectorAll('.department').forEach(departmentDiv => {
-  //     const departmentName = departmentDiv.querySelector('.department-name').value.trim();
-  //     const sizes = [];
-  //     const stock = [];
-
-  //     departmentDiv.querySelectorAll('.size-stock-container').forEach(sizeStockDiv => {
-  //       const size = sizeStockDiv.querySelector('.size-name').value.trim();
-  //       const stockValue = sizeStockDiv.querySelector('.size-stock').value.trim();
-
-  //       if (size && stockValue) { 
-  //         sizes.push(size);
-  //         stock.push(Number(stockValue)); 
-  //       }
-  //     });
-
-  //     if (departmentName) { 
-  //       departments.push({
-  //         name: departmentName,
-  //         sizes: sizes,
-  //         stock: stock
-  //       });
-  //     }
-  //   });
-
-  //   document.getElementById('departments-data').value = JSON.stringify({
-  //     departments
-  //   });
-  // }
-
-  // document.getElementById('toggle-additional-info').addEventListener('click', function() {
-  //   const additionalInfo = document.getElementById('additional-info');
-  //   additionalInfo.classList.toggle('hidden');
-  //   this.textContent = additionalInfo.classList.contains('hidden') ?
-  //     'Additional Info ▼' :
-  //     'Additional Info ▲';
-  // });
-
-  // document.getElementById('add-department').addEventListener('click', function() {
-  //   const departmentList = document.getElementById('department-list');
-
-  //   const departmentDiv = document.createElement('div');
-  //   departmentDiv.className = 'department';
-
-  //   departmentDiv.innerHTML = `
-  //       <label>Department</label>
-  //       <div class="department-input">
-  //           <input type="text" class="department-name" placeholder="Enter Department Name">
-  //           <button type="button" class="delete-department btn">×</button>
-  //       </div>
-  //       <div class="size-stock-list">
-  //           <!-- Sizes and stock inputs will be added here -->
-  //       </div>
-  //       <button type="button" class="add-size btn add-btn">+ Add Size</button>
-  //   `;
-  //   departmentDiv.querySelector('.delete-department').addEventListener('click', function() {
-  //     departmentDiv.remove();
-  //   });
-  //   departmentDiv.querySelector('.add-size').addEventListener('click', function() {
-  //     const sizeStockList = departmentDiv.querySelector('.size-stock-list');
-
-  //     const sizeStockDiv = document.createElement('div');
-  //     sizeStockDiv.className = 'size-stock-container';
-
-  //     sizeStockDiv.innerHTML = `
-  //           <input type="text" class="size-name" placeholder="Size (e.g., Small)">
-  //           <input type="number" class="size-stock" placeholder="Stock" min="0">
-  //           <button type="button" class="delete-size btn">×</button>
-  //       `;
-
-  //     sizeStockDiv.querySelector('.delete-size').addEventListener('click', function() {
-  //       sizeStockDiv.remove();
-
-  //     });
-
-  //     sizeStockList.appendChild(sizeStockDiv);
-  //   });
-
-  //   departmentList.appendChild(departmentDiv);
-  // });
 </script>
 @endsection

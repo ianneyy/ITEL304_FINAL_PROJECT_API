@@ -82,9 +82,30 @@
 
 </div>
 </div>
+
+<div class="InputContainer">
+  <input
+    placeholder="Search"
+    id="input"
+    class="input"
+    name="text"
+    type="text" />
+
+  <label class="labelforsearch" for="input">
+    <svg class="searchIcon" viewBox="0 0 512 512">
+      <path
+        d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"></path>
+    </svg>
+  </label>
+</div>
+
+<!-- <div class="search-container">
+  <input type="text" id="searchBar" placeholder="Search for products...">
+</div> -->
+
 <div class="product">
   @forelse($data as $d)
-  <div class="product-card">
+  <div class="product-card" data-name="{{ $d->name }}" data-description="{{ $d->description }}">
     <a href="{{ url('view-details/' . $d->id)}}">
       <div class="img-container">
         <img class="shirt" src="{{ '../' . $d->image_url }}" alt="">
@@ -158,6 +179,9 @@
   // Get the checkbox and container elements
   const navToggle = document.getElementById('nav-toggle');
   const container = document.querySelector('.product');
+  const search = document.querySelector('.InputContainer');
+  const searchInput = document.querySelector('.input');
+
 
   // Add an event listener to detect checkbox state changes
   navToggle.addEventListener('change', () => {
@@ -166,12 +190,38 @@
       container.style.position = 'absolute';
       container.style.maxWidth = '85vw';
       container.style.left = 'var(--navbar-width-min)';
+      searchInput.style.width = '850px';
+
+      search.style.position = 'absolute';
+      search.style.left = '43%';
+
     } else {
       // Reset styles when the checkbox is unchecked
       container.style.position = '';
       container.style.maxWidth = '';
       container.style.left = '';
+
+      search.style.position = '';
+      search.style.maxWidth = '';
+      search.style.left = '';
     }
+  });
+
+
+  document.getElementById('input').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const productCards = document.querySelectorAll('.product-card');
+
+    productCards.forEach(card => {
+      const productName = card.getAttribute('data-name').toLowerCase();
+      const productDescription = card.getAttribute('data-description').toLowerCase();
+
+      if (productName.includes(searchTerm) || productDescription.includes(searchTerm)) {
+        card.style.display = 'block'; // Show matching products
+      } else {
+        card.style.display = 'none'; // Hide non-matching products
+      }
+    });
   });
 </script>
 @endsection

@@ -14,24 +14,86 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Product;
 
 class AdminController extends Controller
 {
 
 
 
-     public function showDashboard(){
+     public function showDashboard( Request $request){
+        $data = Product::with('variations.sizes')->get();
+
+        $lowestStock = null;
+        $lowestStockVariation = null;
+        $lowestStockSize = null;
+        foreach ($data as $product) {
+            foreach ($product->variations as $variation) {
+                foreach ($variation->sizes as $size) {
+                    // Check if the size stock is lower than the current lowest stock
+                    if (is_null($lowestStock) || $size->stock < $lowestStock) {
+                        $lowestStock = $size->stock;
+                        $lowestStockVariation = $variation; // Save the variation with the lowest stock
+                        $lowestStockSize = $size->size; // Save the size with the lowest stock
+                    }
+                }
+            }
+        }
         $recentData = DB::table('student_reservation')->get();
 
         $dataCount = DB::table('student_reservation')
             ->count();
-
+ $today = Carbon::today();
 
         $pendingDataCount = DB::table('student_reservation')
         ->where('status', 'pending')
         ->count();
+        $completedDataCount = DB::table('student_reservation')
+        ->where('status', 'completed')
+        ->count();
 
-        return view('admin.dashboard', compact('recentData', 'dataCount', 'pendingDataCount'));
+        $pendingDataCountToday = DB::table('student_reservation')
+        ->where('status', 'pending')
+         ->whereDate('created_at', $today)
+        ->count();
+
+        $completedDataCountToday = DB::table('student_reservation')
+        ->where('status', 'completed')
+         ->whereDate('created_at', $today)
+        ->count();
+
+
+        $groupBy = $request->input('groupBy', 'daily');
+        
+         $query = DB::table('student_reservation')
+        ->where('status', 'completed')
+        ->whereNotNull('created_at');
+
+   
+    $startOfWeek = $today->copy()->startOfWeek(); 
+
+        $paymentsByDay = DB::table('student_reservation')
+    ->select(DB::raw('DAYOFWEEK(reservation_date ) as day_of_week'), DB::raw('SUM(total_price) as total_payment'))
+    ->groupBy(DB::raw('DAYOFWEEK(reservation_date)'))
+    ->orderBy(DB::raw('DAYOFWEEK(reservation_date)'))
+    ->get();
+    // dd($paymentsByDay);
+       $paymentsByMonth = DB::table('student_reservation')
+    ->select(DB::raw('MONTH(reservation_date) as month'), DB::raw('SUM(total_price) as total_payment'))
+    ->groupBy(DB::raw('MONTH(reservation_date)'))
+    ->orderBy(DB::raw('MONTH(reservation_date)'))
+    ->get();
+
+       
+        return view('admin.dashboard', compact('recentData', 'dataCount', 'pendingDataCount', 'completedDataCount', 'lowestStock', 'lowestStockVariation',
+         'lowestStockSize',
+        'paymentsByDay',
+        'paymentsByMonth',
+        'today',
+        'startOfWeek',
+        'pendingDataCountToday',
+        'completedDataCountToday',
+        ));
     }
     public function showAdminReservation()
     {
@@ -50,7 +112,8 @@ class AdminController extends Controller
     public function paidReservation($id)
     {
         $query = DB::table('student_reservation')->where('id', $id)->update([
-            'status' => 'completed'
+            'status' => 'completed',
+            'created_at' => now()->setTimezone('Asia/Manila')
            
         ]);
 
@@ -58,9 +121,17 @@ class AdminController extends Controller
             return redirect('/admin-reservation');
         }
     }
-    // public function showAdminAnnouncement(){
-    //     return view('admin.admin_announcement');
-    // }
+
+    public function paidQrReservation($id)
+    {
+        $query = DB::table('student_reservation')->where('id', $id)->update([
+            'status' => 'completed'
+        ]);
+        return response()->json(['success' => true]);
+
+       
+    }
+    
     public function addAnnouncement(Request $request){
         Log::info('validating');
         $request->validate([
@@ -120,7 +191,8 @@ class AdminController extends Controller
 
         $reservations = DB::table('student_reservation')
         ->where('order_id', $orderId)
-            ->get();
+        ->where('status', 'pending')
+        ->get();
 
         if ($reservations->isEmpty()) {
             return response()->json(['success' => false, 'message' => 'No reservations found.']);
@@ -183,5 +255,12 @@ class AdminController extends Controller
         // Optionally, return a success response
         return back()->with('success', 'Reply sent successfully!');
     }
-   
+   public function showWishlist(){
+
+    $data = DB::table('wishlist')
+    ->get();
+    
+
+    return view('admin.wishlist', compact('data'));
+   }
 }

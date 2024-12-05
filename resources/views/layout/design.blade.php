@@ -38,9 +38,16 @@
         </div>
         <ul>
 
-            <li><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                    <path fill="none" stroke="black" stroke-linecap="round" stroke-width="2" d="m21 21l-3.5-3.5M17 10a7 7 0 1 1-14 0a7 7 0 0 1 14 0Z" />
-                </svg></li>
+            
+            <li>
+
+                <div id="wishlist">
+                    <svg class="wishlist-icon" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16">
+                        <path fill="#000" fill-rule="evenodd" d="M8.753 2.247L8 3l-.753-.753A4.243 4.243 0 0 0 1.25 8.25l5.69 5.69L8 15l1.06-1.06l5.69-5.69a4.243 4.243 0 0 0-5.997-6.003M8 12.879l5.69-5.69a2.743 2.743 0 0 0-3.877-3.881l-.752.753L8 5.12L6.94 4.06l-.753-.752v-.001A2.743 2.743 0 0 0 2.31 7.189L8 12.88Z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+
+            </li>
             <li>
 
                 <div id="cart">
@@ -149,18 +156,79 @@
                 <div class="cart-btn">
                     <a href="" class="btn btn-link text-muted">
                         <i class="mdi mdi-arrow-left me-1"></i> Go Back </a>
-                    <button class="cart-rsv" name="action" value="reserve_now">RESERVE NOW</button>
+                    <button class="cart-rsv" name="action" value="reserve_now">CHECKOUT</button>
                 </div>
             </div>
 
         </div>
     </form>
+    <div class="wishlist-popup">
+        <div class="wishlist-items">
+            <h5 class="cart-head mb-2 mt-2">Wishlist</h5>
+            <hr>
+            @forelse($wishlistData as $wishlist)
+            <div class="wishlist-item-container mb-3">
+                <div class="wishlist-item-card">
+                    <div class="cbx-img">
 
+                        <div class="cart-img">
+                            <img src="../{{$wishlist->image_url}}" alt="">
+                        </div>
+                    </div>
+                    <div class="prdct-info">
+                        <h5>{{$wishlist->name}}</h5>
+                        <p>{{$wishlist->size}} - {{$wishlist->variation_type}}</p>
+
+                    </div>
+
+                    <div class="edit">
+                        <p class="wishlist-edit-btn">Edit</p>
+                    </div>
+
+
+                </div>
+                <div class="wishlist-delete-btn">
+                    <a href="{{url('delete-wishlist/' . $wishlist->id)}}" style="text-decoration:none; display:flex; flex-direction: column; align-items:center;">
+                        <i class="fa-solid fa-trash"></i>
+                        <p>Delete</p>
+                    </a>
+                </div>
+            </div>
+            @empty
+            <div class="empty-state" style="width: 400px; display:flex; flex-direction:column; align-items: center; justify-content: center;">
+                <img src="../img/empty_cart.svg" alt="" style="height: 100px;">
+                <p style="color: #555;">Your wishlist is empty.</p>
+            </div>
+            @endforelse
+        </div>
+    </div>
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/laravel-echo/1.11.1/echo.iife.js"></script>
+    <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+    <script>
+         
+    const echo = new Echo({
+        broadcaster: 'pusher',
+        key: '{{ env('PUSHER_APP_KEY') }}',
+        cluster: '{{ env('PUSHER_APP_CLUSTER') }}',
+        forceTLS: true,
+    });
 
+    // Listen for new reservations
+    echo.channel('reservations')
+        .listen('NewPendingReservation', (data) => {
+            document.getElementById('reservation-badge').style.display = 'inline-block';
+        });
+
+    // Reset badge on click
+    document.getElementById('reservations-link').addEventListener('click', () => {
+        document.getElementById('reservation-badge').style.display = 'none';
+    });
+    </script>
     @yield('content')
 
 
@@ -178,6 +246,54 @@
             cart.classList.toggle('border-bottom-active');
         });
 
+        document.getElementById("wishlist").addEventListener("click", function() {
+            var wishlistPopup = document.querySelector(".wishlist-popup");
+            wishlistPopup.classList.toggle("show");
+            const wishlist = document.getElementById('wishlist');
+
+            wishlist.classList.toggle('border-bottom-active');
+        });
+        const cartEditButtons = document.querySelectorAll('.edit-btn'); // Select all "Edit" buttons
+        const wishlistEditButtons = document.querySelectorAll('.wishlist-edit-btn');
+        // Loop through each button and add a click event listener
+
+        cartEditButtons.forEach((btn) => {
+            btn.addEventListener('click', function() {
+                const container = this.closest('.item-container'); // Find the closest cart item container
+                container.classList.toggle('edit-mode'); // Toggle the 'edit-mode' class
+            });
+        });
+
+        // Add event listeners for wishlist edit buttons
+        wishlistEditButtons.forEach((btn) => {
+            btn.addEventListener('click', function() {
+                const wishlistContainer = this.closest('.wishlist-item-container'); // Find the closest wishlist item container
+                wishlistContainer.classList.toggle('wishlist-edit-mode'); // Toggle the 'wishlist-edit-mode' class
+            });
+        });
+        window.addEventListener("click", function(e) {
+            if (!document.querySelector(".cart-popup").contains(e.target) && !document.getElementById("cart").contains(e.target)) {
+                const cart = document.getElementById('cart');
+
+                // Only remove the border if it's currently applied
+                if (cart.classList.contains('border-bottom-active')) {
+                    cart.classList.remove('border-bottom-active');
+                }
+                document.querySelector(".cart-popup").classList.remove("show");
+            }
+            if (
+                !document.querySelector(".wishlist-popup").contains(e.target) &&
+                !document.getElementById("wishlist").contains(e.target)
+            ) {
+                const wishlist = document.getElementById("wishlist");
+
+                // Only remove the border if it's currently applied
+                if (wishlist.classList.contains("border-bottom-active")) {
+                    wishlist.classList.remove("border-bottom-active");
+                }
+                document.querySelector(".wishlist-popup").classList.remove("show");
+            }
+        });
         document.addEventListener('DOMContentLoaded', function() {
             const plus = document.querySelector(".plus1"),
                 minus = document.querySelector(".minus1"),
@@ -198,29 +314,22 @@
             });
 
 
-            const editButtons = document.querySelectorAll('.edit-btn'); // Select all "Edit" buttons
 
-            // Loop through each button and add a click event listener
-            editButtons.forEach((btn, index) => {
-                btn.addEventListener('click', function() {
-                    const container = this.closest('.item-container');
-                    container.classList.toggle('edit-mode');
-                });
-            });
+            // const wishlistEditButtons = document.querySelectorAll('.wishlist-item-container .wishlist-edit-btn');
+
+            // // Loop through each button and add a click event listener
+            // wishlistEditButtons.forEach((btn, index) => {
+            //     btn.addEventListener('click', function() {
+            //         console.log('tite');
+            //         const container = this.closest('.wishlist-item-container');
+            //         container.classList.toggle('wishlist-edit-mode');
+            //     });
+            // });
+
 
 
             // Optionally, you can add an event to close the popup when clicking outside of it
-            window.addEventListener("click", function(e) {
-                if (!document.querySelector(".cart-popup").contains(e.target) && !document.getElementById("cart").contains(e.target)) {
-                    const cart = document.getElementById('cart');
 
-                    // Only remove the border if it's currently applied
-                    if (cart.classList.contains('border-bottom-active')) {
-                        cart.classList.remove('border-bottom-active');
-                    }
-                    document.querySelector(".cart-popup").classList.remove("show");
-                }
-            });
             document.querySelectorAll('.inp-cbx').forEach(checkbox => {
                 checkbox.addEventListener('change', updateTotalAmount);
             });

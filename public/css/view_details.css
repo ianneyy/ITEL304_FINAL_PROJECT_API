@@ -127,6 +127,11 @@
     cursor: pointer;
     color: #ffbd2e;
 }
+.sizeOption:disabled {
+    animation: none !important; /* Disable any animations */
+    color: #ccc; /* Optionally, change the color to indicate it's disabled */
+    pointer-events: none; /* Prevent clicking */
+}
 
 
 
@@ -213,7 +218,7 @@ input[type="number"]::-webkit-inner-spin-button {
     align-items: center;
     
 }
-.details .reserve-btn, .add-cart-btn{
+.details .reserve-btn, .add-cart-btn, .wishlist-btn{
     height: 40px;
     width: 120px;
     font-size: 10px;
@@ -222,7 +227,15 @@ input[type="number"]::-webkit-inner-spin-button {
     border-radius: 5px;
    
 }
-
+.wishlist-btn{
+       background-color: #ffd37b;
+    color: #8d6e2d;
+    border: 1px solid #e8ac2a87;
+}
+.wishlist-btn:hover{
+    border: none;
+    background-color: #ffdc97;
+}
 
 .reserve-btn{
       background-color: #ffbd2e;
@@ -260,19 +273,7 @@ input[type="number"]::-webkit-inner-spin-button {
 background-color: #ffbd2e;
 color: #fff;
 }
-.wishlist-btn{
-    display: flex;
-    justify-content: center;
-    text-align: center;
-    align-items: center;
-    height: 40px;
-    width: 50px;
-    cursor: pointer;
-    border-radius: 5px;
-    border: none;
-    color: #ffbd2e;
-    
-}
+
 .sub-btn a{
     text-decoration: none;
     color: #5a5a5a;
@@ -280,5 +281,56 @@ color: #fff;
 }
 .sub-btn{
     display: flex;
+    justify-content: center;
     gap: 10px;
 }
+.sub-btn p{
+    text-align: center;
+}
+/* From Uiverse.io by andrew-demchenk0 */ 
+.success {
+   
+    position: absolute;
+    z-index: 9999;
+    top: 80%;
+    left: 75%;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  width: 320px;
+  padding: 12px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: start;
+  background: #EDFBD8;
+  border-radius: 8px;
+  box-shadow: 0px 0px 5px -3px #111;
+  
+}
+
+.success__icon {
+  width: 20px;
+  height: 20px;
+  transform: translateY(-2px);
+  margin-right: 8px;
+}
+
+.success__icon path {
+  fill: #84D65A;
+}
+
+.success__title {
+  font-weight: 500;
+  font-size: 14px;
+  color: #2B641E;
+}
+
+.success__close {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.success__close path {
+  fill: #2B641E;
+}
+

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
+use App\Events\NewPendingReservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -21,8 +22,8 @@ class ReserveController extends Controller
 
         // Fetch the department name
         $variationName = DB::table('product_variations')
-            ->where('id', $request->input('department'))
-            ->value('variation_type');
+        ->where('id', $request->input('department'))
+        ->value('variation_type');
 
         // Fetch the size name
         $sizeName = DB::table('product_variation_sizes')
@@ -83,12 +84,57 @@ class ReserveController extends Controller
                 'total_price' => $totalPrice
             ]);
 
+            
+
             if ($query) {
                 // Ensure you redirect to the cart page or another desired location
-                return redirect()->back()->with('success', 'Product added to cart!');
+                return redirect()->back()->with('cart_success', true);
             } else {
                 return redirect()->back()->with('error', 'Failed to add to cart.');
             }
+        }
+         elseif ($request->action == 'add_to_wishlist') {
+
+            
+            $name = $request->input('name');
+
+            DB::table('user_wishlist')->insert([
+                'user_id' => $userId,
+                'name' => $name,
+                'image_url' => $request->input('image_url'),
+                'variation_type' => $variationName,
+                'size' => $sizeName,
+                
+            ]);
+
+            $existingWishlist = DB::table('wishlist')
+            ->where('user_id', $userId)
+            ->where('name', $name)
+            ->where('variation_type', $variationName)
+            ->where('size', $sizeName)
+            ->first();
+            if ($existingWishlist) {
+                // If it exists, increment the count
+                $query = DB::table('wishlist')
+                ->where('id', $existingWishlist->id)
+                ->increment('count', 1);
+            } else {
+                // If it doesn't exist, insert a new entry
+                $query = DB::table('wishlist')->insert([
+                    'user_id' => $userId,
+                    'name' => $name,
+                    'variation_type' => $variationName,
+                    'size' => $sizeName,
+                    'count' => 1 // Start with a count of 1 for a new entry
+                ]);
+            }
+
+
+
+            if ($query) {
+                // Ensure you redirect to the cart page or another desired location
+                return redirect()->back()->with('success', 'Item added to wishlist.');
+            } 
         }
     }
     public function sendToFillUpForm(Request $request){
@@ -266,21 +312,36 @@ class ReserveController extends Controller
                 'total_price' => $totalPrice,
                 'reservation_date' => $reservationDate,
                 'pay_method' => $payMethod,
+                'created_at' => now()
                         
             ]);
 
-            // $getVariationId = DB::table('product_variations')
-            // ->where('', $reservationId)
-            // ->get();
+            event(new NewPendingReservation($reservation));
+            $product = DB::table('products')->where('name', $reservation['name'])->first();
 
+            // DB::table('products')
+            // ->where('name', $reservation['name'])
+            // ->decrement('stock', $reservation['qty']);
 
-            DB::table('products')
-            ->where('name', $reservation['name']) // Match by product name or another unique identifier
-            ->decrement('stock', $reservation['qty']);
+            if ($product) {
+                // Check if the product has variations
+                $variation = DB::table('product_variations')
+                ->where('product_id', $product->id)
+                    ->first();
 
-            // DB::table('product_variation_sizes')
-            // ->where('name', $reservation['name']) // Match by product name or another unique identifier
-            // ->decrement('stock', $reservation['department']);
+                if ($variation && isset($reservation['size'])) {
+                    // Decrement stock in product_variation_sizes
+                    DB::table('product_variation_sizes')
+                    ->where('product_variation_id', $variation->id)
+                        ->where('size', $reservation['size'])
+                        ->decrement('stock', $reservation['qty']);
+                } else {
+                    // Decrement stock in products table
+                    DB::table('products')
+                        ->where('id', $product->id)
+                        ->decrement('stock', $reservation['qty']);
+                }
+            }
           
            
         }
@@ -292,23 +353,16 @@ class ReserveController extends Controller
             ->orderBy('updated_at', 'asc')
                 ->delete();
         } else {
-            // Log an error or handle the invalid cart_id case
+           
             Log::error('Cart ID is empty or invalid.');
         }
-
+       
     
      
 
         return redirect(url('/student/qrcode'));
     }
-    public function show($id)
-    {
-        // Retrieve reservation details from the database
-        $reservation = DB::table('student_reservation')->where('id', $id)->first();
-
-        // Return the reservation details view
-        return view('pages.show', compact('reservation'));
-    }
+   
   
     
 }

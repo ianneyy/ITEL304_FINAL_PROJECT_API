@@ -125,12 +125,12 @@
     </div>
 
     <div class="nav-button">
-      <a href="{{ url('admin-reservation') }}" style="text-decoration: none; color: inherit;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
-          <path fill="none" stroke="#FFBD2E" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.5 21H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6M16 3v4M8 3v4m-4 4h16m-5 8l2 2l4-4" />
-        </svg></i><span>Reservations</span>
-      </a>
-    </div>
+            <a href="{{ url('admin-reservation') }}" style="text-decoration: none; color: inherit;" id="reservations-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
+                    <path fill="none" stroke="#FFBD2E" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.5 21H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6M16 3v4M8 3v4m-4 4h16m-5 8l2 2l4-4" />
+                </svg></i><span>Reservations</span><span id="reservation-badge" class="badge bg-warning text-dark" style="display: none;">New</span>
+            </a>
+        </div>
 
     <div class="nav-button"><a href="{{ url('inventory') }}" style="text-decoration: none; color: inherit;">
 
@@ -138,6 +138,13 @@
           <path fill="#ffbd2e" d="M20 2H4c-1 0-2 .9-2 2v3.01c0 .72.43 1.34 1 1.69V20c0 1.1 1.1 2 2 2h14c.9 0 2-.9 2-2V8.7c.57-.35 1-.97 1-1.69V4c0-1.1-1-2-2-2m-1 18H5V9h14zm1-13H4V4h16z" />
           <path fill="#ffbd2e" d="M9 12h6v2H9z" />
         </svg><span style="color: #FFBD2E;">Inventory</span></a>
+    </div>
+    <div class="nav-button"><a href="{{ url('wishlist') }}" style="text-decoration: none; color: inherit;">
+
+        <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
+          <path fill="none" stroke="#ffbd2e" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19.071 13.142L13.414 18.8a2 2 0 0 1-2.828 0l-5.657-5.657A5 5 0 1 1 12 6.072a5 5 0 0 1 7.071 7.07" />
+        </svg>
+        </svg><span>Wishlist</span></a>
     </div>
 
     <div class="nav-button"><a href="{{ url('announcement') }}" style="text-decoration: none; color: inherit;">
@@ -152,7 +159,7 @@
     <div class="nav-button"><a href="{{ url('messages') }}" style="text-decoration: none; color: inherit;">
         <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 512 512">
           <path fill="#ffbd2e" d="M160 368c26.5 0 48 21.5 48 48v16l72.5-54.4c8.3-6.2 18.4-9.6 28.8-9.6H448c8.8 0 16-7.2 16-16V64c0-8.8-7.2-16-16-16H64c-8.8 0-16 7.2-16 16v288c0 8.8 7.2 16 16 16zm48 124l-.2.2l-5.1 3.8l-17.1 12.8c-4.8 3.6-11.3 4.2-16.8 1.5s-8.8-8.2-8.8-14.3v-80H64c-35.3 0-64-28.7-64-64V64C0 28.7 28.7 0 64 0h384c35.3 0 64 28.7 64 64v288c0 35.3-28.7 64-64 64H309.3z" />
-        </svg><span >Messages</span></a>
+        </svg><span>Messages</span></a>
     </div>
 
 
@@ -214,8 +221,8 @@
           </svg>Edit</a>
       </div>
 
-      <div class="ed" style="background-color: #f58a8a">
-        <a href="{{ url('delete-uniforms/' . $d->id . '/' . $size->id)}}" style="color: #a80000;">
+      <div class="ed del" style="background-color: #f58a8a" data-id="{{$d->id}}" data-sizeId="{{$size->id}}">
+        <a href="javascript:void(0)" class="delete-button-2" style="color: #a80000;">
           <svg class="edit" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
             <g fill="none" stroke="#a80000" stroke-width="2">
               <path stroke-linecap="round" d="M20.5 6h-17m15.333 2.5l-.46 6.9c-.177 2.654-.265 3.981-1.13 4.79s-2.196.81-4.856.81h-.774c-2.66 0-3.991 0-4.856-.81c-.865-.809-.954-2.136-1.13-4.79l-.46-6.9" />
@@ -224,7 +231,25 @@
           </svg>Delete</a>
       </div>
     </div>
-  </div> <!-- End content-bar -->
+  </div> 
+    <div id="overlay" class="modal-overlay"></div>
+    <div class="card">
+      <div class="card-content">
+        <p class="card-heading">Delete item?</p>
+        <p class="card-description">Are you sure you want to delete this item? This action cannot be undone.</p>
+      </div>
+      <div class="card-button-wrapper">
+        <button class="card-button secondary">Cancel</button>
+        <a id="delete-link-2" href="#" class="card-button primary" style="text-align:center; display: flex; justify-content: center; align-items:center;">Delete</a>
+      </div>
+      <button class="exit-button">
+        <svg height="20px" viewBox="0 0 384 512">
+          <path
+            d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+          ></path>
+        </svg>
+      </button>
+    </div>
   @endforeach
   @endforeach
   @if($d->variations->isEmpty())
@@ -249,8 +274,8 @@
           </svg>Edit</a>
       </div>
 
-      <div class="ed" style="background-color: #f58a8a">
-        <a href="{{ url('delete-product/' . $d->id)}}" style="color: #a80000;">
+      <div class="ed" style="background-color: #f58a8a" data-id="{{$d->id}}">
+        <a href="javascript:void(0)" class="delete-button" style="color: #a80000;">
           <svg class="edit" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
             <g fill="none" stroke="#a80000" stroke-width="2">
               <path stroke-linecap="round" d="M20.5 6h-17m15.333 2.5l-.46 6.9c-.177 2.654-.265 3.981-1.13 4.79s-2.196.81-4.856.81h-.774c-2.66 0-3.991 0-4.856-.81c-.865-.809-.954-2.136-1.13-4.79l-.46-6.9" />
@@ -260,6 +285,24 @@
       </div>
     </div>
   </div>
+      <div id="overlay" class="modal-overlay"></div>
+    <div class="card">
+      <div class="card-content">
+        <p class="card-heading">Delete item?</p>
+        <p class="card-description">Are you sure you want to delete this item? This action cannot be undone.</p>
+      </div>
+      <div class="card-button-wrapper">
+        <button class="card-button secondary">Cancel</button>
+        <a id="delete-link" href="#" class="card-button primary" style="text-align:center; display: flex; justify-content: center; align-items:center;">Delete</a>
+      </div>
+      <button class="exit-button">
+        <svg height="20px" viewBox="0 0 384 512">
+          <path
+            d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+          ></path>
+        </svg>
+      </button>
+    </div>
   @endif
   @empty
   <div style="color: #fff; margin-top: 50px">No Inventory</div>
@@ -268,7 +311,69 @@
 
 
 </div>
+
+
+
 <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const deleteButtons = document.querySelectorAll('.delete-button');
+    const deleteButtons2 = document.querySelectorAll('.delete-button-2');
+    const modal = document.querySelector('.card');
+    const overlay = document.querySelector('#overlay');
+    const closeModalButtons = document.querySelectorAll('.exit-button, .card-button.secondary');
+    
+    // Loop through all delete buttons and add event listeners
+    deleteButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        // Get the data-id from the closest .ed container
+        const id = this.closest('.ed').getAttribute('data-id');
+        
+        const deleteUrl = '/delete-product/' + id;
+       
+        
+        // Set the delete URL dynamically in the delete link
+        document.getElementById('delete-link').setAttribute('href', deleteUrl);
+
+        // Show the modal and overlay
+        modal.classList.add('active');
+        overlay.classList.add('active');
+      });
+    });
+
+     deleteButtons2.forEach(button => {
+      button.addEventListener('click', function() {
+        // Get the data-id from the closest .ed container
+       
+         const idd = this.closest('.del').getAttribute('data-id');
+         const sizeId = this.closest('.del').getAttribute('data-sizeId');
+       
+        const deleteUrl2 = '/delete-uniforms/' + idd + '/' + sizeId;
+        
+        // Set the delete URL dynamically in the delete link
+        
+        document.getElementById('delete-link-2').setAttribute('href', deleteUrl2);
+
+        // Show the modal and overlay
+        modal.classList.add('active');
+        overlay.classList.add('active');
+      });
+    });
+
+    // Close modal when clicking on cancel buttons or the close icon
+    closeModalButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        modal.classList.remove('active');
+        overlay.classList.remove('active');
+      });
+    });
+
+    // Close modal if overlay is clicked
+    overlay.addEventListener('click', function() {
+      modal.classList.remove('active');
+      overlay.classList.remove('active');
+    });
+  });
+
   // Get the checkbox and container elements
   const navToggle = document.getElementById('nav-toggle');
   const container = document.querySelector('.container');

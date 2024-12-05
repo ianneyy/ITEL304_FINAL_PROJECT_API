@@ -21,7 +21,7 @@
     position: absolute;
     height: auto;
 
-    background-color: #D9D9D9;
+    background-color: #e8e8e8;
     border-radius: 10px;
     top: 100px;
     filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.2));
@@ -134,8 +134,8 @@
         <th>QUANTITY</th>
         <th>RESERVATION DATE</th>
         <th>STATUS</th>
-        <th>QR Code</th>
-        <th style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">Action</th>
+        <th>QR CODE</th>
+        <th style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">ACTION</th>
       </tr>
       @forelse($data as $d)
       <tr>
@@ -147,7 +147,7 @@
         <td>{{$d->reservation_date}}</td>
         <td>{{$d->status}}</td>
         <td><a href="{{ url('student/view-qr/' .$d->qrcode_id)}}" class="qr-btn">View Qr Code</a></td>
-        <td><a href="{{ url('cancel-reservation/' .$d->id)}}" style="color: #a80000" class="cancel-btn">Cancel</a></td>
+        <td><a href="{{ url('cancel-reservation/' .$d->id)}}" style="color: #a80000" class="cancel-btn" onclick="return confirmCancel(event, this.href);">Cancel</a></td>
 
       </tr>
       @empty
@@ -168,12 +168,12 @@
     <h4 class="subtitle">Past Reservations</h4>
     <table>
       <tr>
-        <th style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;">Uniform Type</th>
-        <th>Variation</th>
-        <th>Size</th>
-        <th>Quantity</th>
-        <th>Reservation Date</th>
-        <th style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">Status</th>
+        <th style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;">TYPE</th>
+        <th>VARIATION</th>
+        <th>SIZE</th>
+        <th>QUANTITY</th>
+        <th>RESERVATION DATE</th>
+        <th style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">STATUS</th>
 
       </tr>
       @forelse($pastData as $past)
@@ -245,6 +245,13 @@
     </svg></a>
 </div>
 <script>
+  function confirmCancel(event, url) {
+    event.preventDefault(); // Prevent default navigation
+    const userConfirmed = confirm("Are you sure you want to cancel this reservation?");
+    if (userConfirmed) {
+      window.location.href = url; // Navigate to the URL if confirmed
+    }
+  }
   // Get the checkbox and container elements
   const navToggle = document.getElementById('nav-toggle');
   const container = document.querySelector('.containerr');

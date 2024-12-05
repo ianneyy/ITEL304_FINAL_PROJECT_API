@@ -18,17 +18,16 @@ header h1 {
     padding: 20px;
     width: 32%;
 }
-.rsv{
+.rsv {
     display: flex;
     flex-direction: column;
     margin-left: 20px;
     height: 45px;
 }
-.recent-activity h5{
+.recent-activity h5 {
     color: var(--navbar-light-primary);
-
 }
-.icon-stat{
+.icon-stat {
     background-color: #ffbd2e52;
     height: 24px;
     width: 45px;
@@ -41,7 +40,7 @@ header h1 {
 .stat-card h4 {
     font-size: 1rem;
     margin-bottom: 0;
-    
+
     color: var(--navbar-light-secondary);
 }
 
@@ -49,26 +48,30 @@ header h1 {
     font-size: 1.25rem;
     font-weight: bold;
     color: var(--navbar-light-primary);
-    
 }
 
 /* Chart section */
 .chart {
     margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
 }
-.chart h5{
+.chart h5 {
     color: var(--navbar-light-primary);
 }
 .chart-box {
-    background-color: #936d1b;
-    height: 200px;
+    background-color: var(--navbar-dark-secondary);
+    height: 350px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     color: white;
     border-radius: 10px;
+    width: 32%;
+    padding: 40px 0;
+   
 }
-
 
 /* Recent Activity section */
 .recent-activity table {
@@ -77,14 +80,15 @@ header h1 {
     margin-top: 20px;
 }
 
-.recent-activity table th, .recent-activity table td {
+.recent-activity table th,
+.recent-activity table td {
     padding: 10px;
     text-align: left;
 }
 
 .recent-activity table th {
     background-color: var(--navbar-dark-primary);
-   
+
     color: var(--navbar-light-secondary);
 }
 
@@ -95,15 +99,12 @@ header h1 {
 .recent-activity table tr:hover {
     background-color: transparent;
 }
-td{
+td {
     border: none;
-        color: var(--navbar-light-primary);
-
+    color: var(--navbar-light-primary);
 }
-.recent-activity{
+.recent-activity {
     background-color: var(--navbar-dark-secondary);
     border-radius: 10px;
     padding: 20px;
-    
-
 }

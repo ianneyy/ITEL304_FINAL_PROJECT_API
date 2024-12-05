@@ -10,6 +10,7 @@ use App\Http\Controllers\UniformsController;
 use App\Http\Controllers\ReserveController;
 use App\Http\Controllers\Student\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\DB;
 
 
@@ -96,6 +97,8 @@ Route::post('/add-reservation', [ReserveController::class, 'addReserve'])->name(
 
 Route::get('/admin-reservation', [AdminController::class, 'showAdminReservation']);
 Route::get('/paid-reservation/{id}', [AdminController::class, 'paidReservation']);
+Route::post('/paid-qr-reservation/{id}', [AdminController::class, 'paidQrReservation']);
+
 
 Route::get('/student/announcement', [UniformsController::class, 'showAnnouncement']);
 
@@ -121,6 +124,7 @@ Route::post('/student/contact-us/send-message', [UniformsController::class, 'add
 Route::post('/continue-fill-up', [ReserveController::class, 'sendToFillUpForm']);
 
 Route::get('/delete-cart/{id}', [CartController::class, 'deleteCart']);
+Route::get('/delete-wishlist/{id}', [WishlistController::class, 'deleteWishlist']);
 
 // Route::get('/cart', [CartController::class, 'showCart'])->name('cart.show');
 
@@ -140,3 +144,5 @@ Route::get('/admin/reservation-details', [AdminController::class, 'getReservatio
 
 Route::get('/messages', [AdminController::class, 'showMessages']);
 Route::post('/reply/{id}', [AdminController::class, 'sendReply']);
+Route::get('/cancel-reservation/{id}', [UniformsController::class, 'cancelReservation']);
+Route::get('/wishlist', [AdminController::class, 'showWishlist']);

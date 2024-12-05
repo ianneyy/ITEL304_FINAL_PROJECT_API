@@ -21,7 +21,7 @@
         position: absolute;
         height: auto;
 
-        background-color: #D9D9D9;
+        background-color: #e8e8e8;
         border-radius: 10px;
         top: 100px;
         filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.2));

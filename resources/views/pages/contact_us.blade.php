@@ -20,7 +20,7 @@
     .containers {
         position: absolute;
         align-items: center;
-        background-color: #D9D9D9;
+        background-color: #e8e8e8;
         height: auto;
         border-radius: 10px;
         padding: 100px 0;

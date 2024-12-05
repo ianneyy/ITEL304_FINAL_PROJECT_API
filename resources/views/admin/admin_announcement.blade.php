@@ -6,7 +6,7 @@
         position: absolute;
         left: 10px;
         right: 10px;
-        top: 182px;
+        top: 234px;
         width: calc(100% - 16px);
         height: 54px;
         background-color: #636363;
@@ -51,11 +51,11 @@
                 </svg><span>Dashboard</span></a>
         </div>
 
-        <div class="nav-button">
-            <a href="{{ url('admin-reservation') }}" style="text-decoration: none; color: inherit;">
+         <div class="nav-button">
+            <a href="{{ url('admin-reservation') }}" style="text-decoration: none; color: inherit;" id="reservations-link">
                 <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
                     <path fill="none" stroke="#FFBD2E" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.5 21H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6M16 3v4M8 3v4m-4 4h16m-5 8l2 2l4-4" />
-                </svg></i><span>Reservations</span>
+                </svg></i><span>Reservations</span><span id="reservation-badge" class="badge bg-warning text-dark" style="display: none;">New</span>
             </a>
         </div>
 
@@ -66,7 +66,13 @@
                     <path fill="#ffbd2e" d="M9 12h6v2H9z" />
                 </svg><span>Inventory</span></a>
         </div>
+        <div class="nav-button"><a href="{{ url('wishlist') }}" style="text-decoration: none; color: inherit;">
 
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
+                    <path fill="none" stroke="#ffbd2e" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19.071 13.142L13.414 18.8a2 2 0 0 1-2.828 0l-5.657-5.657A5 5 0 1 1 12 6.072a5 5 0 0 1 7.071 7.07" />
+                </svg>
+                </svg><span>Wishlist</span></a>
+        </div>
         <div class="nav-button"><a href="{{ url('announcement') }}" style="text-decoration: none; color: inherit;">
 
                 <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">

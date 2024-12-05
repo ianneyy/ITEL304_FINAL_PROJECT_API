@@ -92,92 +92,7 @@ class UniformsController extends Controller
     }
     public function addUniform(Request $request)
     {
-        // Log::info('validating');
-        // $request->validate([
-        //     'name' => 'required|string',
-        //     'description' => 'required|string',
-        //     'price' => 'required|numeric',
-        //     'image_url' => 'nullable|mimes:png,jpg,jpeg,webp',
-        //     'departments' => 'required|json',
-        //     'sizes' => 'required|json',
-        //     'stock' => 'required|json' 
-        // ]);
-
-        // Log::info('validated');
-
-        // $path = null;
-        // if ($request->has('image_url')) {
-        //     $file = $request->file('image_url');
-        //     $filename = $file->getClientOriginalName();
-        //     $path = 'img/';
-        //     $file->move($path, $filename);
-        //     Log::info('image uploaded');
-        //     $imagePath = $path . $filename;
-        // }
-
-
-        // $query = DB::table('uniforms')->insertGetId([
-        //     'name' => $request->input('name'),
-        //     'description' => $request->input('description'),
-        //     'price' => $request->input('price'),
-        //     'image_url' => $path . $filename
-        // ]);
-
-        // Log::info('uniforms query');
-
-        // $departments = json_decode($request->input('departments'), true);
-        // $sizes = json_decode($request->input('sizes'), true);
-        // Log::info($departments);
-
-        // $stock = json_decode($request->input('stock'), true);
-        // if ($departments) {
-        //     foreach ($departments as $department) {
-        //         $departmentId = DB::table('departments')->insertGetId([
-        //             'uniform_id' => $query,
-        //             'name' => $request->input('name'),
-        //             'dept' => $department
-        //         ]);
-        //         $departmentIds[] = $departmentId;
-
-        //     }
-        // }
-
-
-        // Log::info('Array contents: ' . json_encode($departmentIds));
-
-        // if ($sizes && $stock && count($sizes) === count($stock)) {
-        //     foreach ($sizes as $index => $size) {
-
-        //         DB::table('sizes')->insert([
-        //             'department_id' => $departmentId,
-        //             'uniform_id' => $query,
-        //             'size' => $size,
-        //             'stock' => $stock[$index]  
-        //         ]);
-        //     }
-        // }
-
-
-        // foreach ($departments as $department) {
-        //     foreach ($sizes as $index => $size) {
-
-        //         DB::table('inventory')->insert([
-        //             'department_id' => $departmentId,
-        //             'name' => $request->input('name'),
-        //             'price' => $request->input('price'),
-        //             'department' => $department, 
-        //             'size' => $size,             
-        //             'stock' => $stock[$index],   
-        //             'created_at' => now(),
-        //             'updated_at' => now(),
-        //         ]); 
-        //     }
-        // }
-
-        // Redirect to inventory page
-        // if($query){
-        //     return redirect(url('/inventory'));
-        // }
+        
         $path = null;
         if ($request->has('image_url')) {
             $file = $request->file('image_url');
@@ -192,7 +107,7 @@ class UniformsController extends Controller
         $productId = DB::table('products')->insertGetId([
             'image_url' => $imagePath,
             'name' => $request->input('product_name'),
-            'description' => $request->input('product_name'),
+            'description' => $request->input('description'),
             'price' => $request->input('price'),
             'stock' => $request->input('stocks'),
             'created_at' => now(),
@@ -234,10 +149,10 @@ class UniformsController extends Controller
         // Optionally, delete the image if no variations or sizes are left for the product
         $remainingSizes = DB::table('product_variation_sizes')->where('product_variation_id', $productId)->count();
         if ($remainingSizes == 0) {
-            $imagePath = DB::table('products')->where('id', $productId)->pluck('image_url')->first();
-            if ($imagePath && file_exists(public_path($imagePath))) {
-                File::delete(public_path($imagePath));
-            }
+            // $imagePath = DB::table('products')->where('id', $productId)->pluck('image_url')->first();
+            // if ($imagePath && file_exists(public_path($imagePath))) {
+            //     File::delete(public_path($imagePath));
+            // }
             // You may want to delete the entire product if no sizes remain
             DB::table('products')->where('id', $productId)->delete();
         }
@@ -263,10 +178,9 @@ class UniformsController extends Controller
         return redirect(url('/inventory'));
     }
     public function showEditForm($id){
-        $data = DB::table('uniforms')
-        ->where('id', $id)
-        ->get();
-        return view('pages.edit_movies_form', compact('data'));
+        $data = Product::findOrFail($id);
+
+        return view('admin.edit_uniforms', compact('data'));
     }
     public function showDetails($id){
         $data = DB::table('products')
@@ -352,6 +266,10 @@ class UniformsController extends Controller
         }
        
     }
-   
+   public function cancelReservation($id){
+    DB::table('student_reservation')->where('id', $id)->delete();
+
+    return redirect()->back()->with('success','Reservation cancelled successfully');
+   }
 
 }

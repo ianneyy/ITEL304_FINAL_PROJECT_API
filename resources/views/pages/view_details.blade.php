@@ -27,7 +27,7 @@
     height: auto;
     width: 100%;
     max-width: 1100px;
-    background-color: #d9d9d9;
+    background-color: #e8e8e8;
     border-radius: 10px;
     top: 100px;
     filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.2));
@@ -175,7 +175,7 @@
         <div class="size-list">
 
           @forelse($sizeData as $size)
-          <option class="sizeOption" data-id="{{ $size->id }}" onclick="changeSizeBorderColor(this), selectSize(this)">{{ $size->size }}</option>
+          <option class="sizeOption" data-id="{{ $size->id }}" onclick="changeSizeBorderColor(this), selectSize(this)" @if($size->stock <= 0) disabled @endif>{{ $size->size }}</option>
           @empty
           <p>No size available.</p>
           @endforelse
@@ -185,21 +185,75 @@
         </div>
         <h6>QTY</h6>
         <div class="main-button">
+
+
+
+          @if($d->stock > 0)
           <div class="qty">
             <span class="minus">-</span>
             <!-- <span class="num" name="qty">01</span> -->
-            <input type="number" name="qty" class="num" value="01">
+
+            <input type="number" name="qty" class="num" value="1" min="1" max="{{ $d->stock}}">
+
             <span class="plus">+</span>
           </div>
+          @else
+          @php
+          $hasStock = false;
+          @endphp
+
+          @foreach ($sizeData as $size)
+          @if($size->stock > 0)
+          @php
+          $hasStock = true;
+          @endphp
+          @break
+          @endif
+          @endforeach
+          @if($hasStock)
+          <div class="qty">
+            <span class="minus">-</span>
+            <!-- <span class="num" name="qty">01</span> -->
+
+            <input type="number" name="qty" class="num" value="1" min="1" max="10">
+
+            <span class="plus">+</span>
+          </div>
+          @else
+          <p>Out of Stock</p>
+          @endif
+          @endif
           <div class="sub-btn">
 
-            <div class="wishlist-btn" id="heart">
-              <i class=" fa-regular fa-heart heart-reg"></i>
 
-            </div>
-            <button type="submit" name="action" class="add-cart-btn" value="add_to_cart"> ADD TO CART</button>
 
-            <button type="submit" name="action" class="reserve-btn" value="reserve_now"> RESERVE NOW</button>
+            @if($d->stock > 0)
+            <button type="submit" name="action" class="add-cart-btn" value="add_to_cart">ADD TO CART</button>
+            <button type="submit" name="action" class="reserve-btn" value="reserve_now">RESERVE NOW</button>
+            @else
+            @php
+            $hasStock = false;
+            @endphp
+            @foreach ($sizeData as $size)
+            @if($size->stock > 0)
+            @php
+            $hasStock = true;
+            @endphp
+            @break
+            @endif
+            @endforeach
+
+            @if($hasStock)
+            <button type="submit" name="action" class="add-cart-btn" value="add_to_cart">ADD TO CART</button>
+            <button type="submit" name="action" class="reserve-btn" value="reserve_now">RESERVE NOW</button>
+            @else
+            <button type="submit" name="action" class="wishlist-btn" value="add_to_wishlist">
+              <i class="fa-regular fa-heart heart-reg" style="margin-right: 5px;"></i>
+              ADD TO WISHLIST
+            </button>
+            @endif
+            @endif
+
           </div>
         </div>
       </div>
@@ -209,6 +263,15 @@
 
 </div>
 
+@if(session('cart_success'))
+<div class="success" style="display: flex;">
+    <div class="success__icon">
+      <svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="m12 1c-6.075 0-11 4.925-11 11s4.925 11 11 11 11-4.925 11-11-4.925-11-11-11zm4.768 9.14c.0878-.1004.1546-.21726.1966-.34383.0419-.12657.0581-.26026.0477-.39319-.0105-.13293-.0475-.26242-.1087-.38085-.0613-.11844-.1456-.22342-.2481-.30879-.1024-.08536-.2209-.14938-.3484-.18828s-.2616-.0519-.3942-.03823c-.1327.01366-.2612.05372-.3782.1178-.1169.06409-.2198.15091-.3027.25537l-4.3 5.159-2.225-2.226c-.1886-.1822-.4412-.283-.7034-.2807s-.51301.1075-.69842.2929-.29058.4362-.29285.6984c-.00228.2622.09851.5148.28067.7034l3 3c.0983.0982.2159.1748.3454.2251.1295.0502.2681.0729.4069.0665.1387-.0063.2747-.0414.3991-.1032.1244-.0617.2347-.1487.3236-.2554z" fill="#393a37" fill-rule="evenodd"></path></svg>
+    </div>
+    <div class="success__title">Item added to cart successfuly</div>
+    <div class="success__close"><svg height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="m15.8333 5.34166-1.175-1.175-4.6583 4.65834-4.65833-4.65834-1.175 1.175 4.65833 4.65834-4.65833 4.6583 1.175 1.175 4.65833-4.6583 4.6583 4.6583 1.175-1.175-4.6583-4.6583z" fill="#393a37"></path></svg></div>
+</div>
+@endif
 <div class="bottom-nav">
   <a href="{{ url('uniforms') }}" style="text-decoration: none; color: inherit;">
     <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
@@ -248,6 +311,17 @@
 
 
 <script>
+
+   document.addEventListener('DOMContentLoaded', function () {
+    const successDiv = document.querySelector('.success');
+    if (successDiv) {
+        setTimeout(() => {
+            successDiv.style.display = 'none';
+        }, 3000); // Hide after 3 seconds
+    }
+});
+
+
   function selectDepartment(element) {
     document.getElementById('selected-department').value = element.getAttribute('data-id');
     // Optionally update button appearance to indicate selection
@@ -264,22 +338,27 @@
 
 
 
-  const plus = document.querySelector(".plus"),
-    minus = document.querySelector(".minus"),
-    num = document.querySelector(".num");
-  let a = 1;
-  plus.addEventListener("click", () => {
-    a++;
-    a = a < 10 ? "0" + a : a;
-    num.value = a;
+
+  document.querySelectorAll('.plus').forEach(button => {
+    button.addEventListener('click', () => {
+      const input = button.previousElementSibling;
+      const max = parseInt(input.getAttribute('max'), 10);
+      let currentValue = parseInt(input.value, 10);
+      if (currentValue < max) {
+        input.value = currentValue + 1;
+      }
+    });
   });
 
-  minus.addEventListener("click", () => {
-    if (a > 1) {
-      a--;
-      a = a < 10 ? "0" + a : a;
-      num.value = a;
-    }
+  document.querySelectorAll('.minus').forEach(button => {
+    button.addEventListener('click', () => {
+      const input = button.nextElementSibling;
+      const min = parseInt(input.getAttribute('min'), 10);
+      let currentValue = parseInt(input.value, 10);
+      if (currentValue > min) {
+        input.value = currentValue - 1;
+      }
+    });
   });
 
   function changeBorderColor(element) {
