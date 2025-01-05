@@ -26,8 +26,9 @@
     display: flex; /* Use flexbox for layout */
     flex-direction: column; /* Stack children vertically */
     /* Center the shirt image */
-    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.2));
-    border: 2px solid #89878792;
+    /* filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.2));
+    border: 2px solid #89878792; */
+     border: 2px solid rgba(0, 0, 0, 0.195);
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     overflow: hidden;

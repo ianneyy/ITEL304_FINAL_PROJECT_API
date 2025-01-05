@@ -80,6 +80,7 @@
     left: 20px;
     border-radius: 8px;
    background-color: #f58a8a;
+   cursor: pointer;
 }
 .rsv-btn{
   margin: 0 10px;
@@ -113,4 +114,112 @@
 
 .nodata-image{
   height: 50px;
+}
+.card-button-wrapper a{
+  text-decoration: none;
+}
+
+
+.cancel-card {
+  width: 380px;
+  height: fit-content;
+  background-color: #fff;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 30px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 105;
+   visibility: hidden; /* Hidden by default */
+  opacity: 0;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transform: translate(-50%, -50%);
+  box-shadow: 20px 20px 30px rgba(0, 0, 0, 0.068);
+}
+.card-content {
+  width: 100%;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.card-heading {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--navbar-light-primary);
+}
+.card-description {
+  font-weight: 400;
+    color: var(--navbar-light-secondary);
+
+}
+.card-button-wrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.card-button {
+  width: 50%;
+  height: 35px;
+
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+.primary {
+  background-color: rgb(255, 114, 109);
+  color: white;
+}
+.primary:hover {
+  background-color: rgb(255, 73, 66);
+}
+.secondary {
+  background-color: #ddd;
+}
+.secondary:hover {
+  background-color: rgb(197, 197, 197);
+}
+.exit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background-color: transparent;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+}
+.exit-button:hover svg {
+  fill: black;
+}
+.exit-button svg {
+  fill: rgb(175, 175, 175);
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* Darkened background */
+  opacity: 0;
+  visibility: hidden;
+  
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 104; /* Behind the modal */
+}
+
+.modal-overlay.active,
+.cancel-card.active {
+  visibility: visible;
+  opacity: 1;
 }

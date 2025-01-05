@@ -238,6 +238,8 @@ a {
     padding: 10px 20px 10px 20px;
     border-radius: 5px;
     color: #fff;
+    background-color: #FFBD2E;
+     border:none;
 }
 
 .payment-loader {
@@ -359,4 +361,9 @@ a {
     justify-content: center; /* Center content horizontally */
     align-items: center; /* Center content vertically */
     z-index: 9999; 
+}
+.proceed-btn:hover{
+    background-color: #d19b28;
+    z-index: 9999;
+
 }

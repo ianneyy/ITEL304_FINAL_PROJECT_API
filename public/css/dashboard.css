@@ -8,6 +8,7 @@ header h1 {
     display: flex;
     justify-content: space-between;
     margin-bottom: 30px;
+    gap: 10px;
 }
 
 .stat-card {
@@ -64,7 +65,7 @@ header h1 {
     height: 350px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     color: white;
     border-radius: 10px;
@@ -72,7 +73,9 @@ header h1 {
     padding: 40px 0;
    
 }
-
+.chart-title{
+    text-align: center;
+}
 /* Recent Activity section */
 .recent-activity table {
     width: 100%;

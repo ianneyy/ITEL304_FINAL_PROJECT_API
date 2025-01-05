@@ -114,18 +114,22 @@ h1 {
  justify-content: flex-end;
 }
 #reply-form button:hover {
-  background-color: #eebe58;
+  background-color: #E5BD6E;
   color: #ebe5e5;
 }
 
 
 .reply-btn {
-  padding: 5px 0;
+  padding: 5px 3px;
+  width: 45px;
     background-color: none;
   color: #4a90e2;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+.reply-btn:hover{
+  background-color: #4282cb41;
 }
 .admin-reply {
   margin-top: 10px;

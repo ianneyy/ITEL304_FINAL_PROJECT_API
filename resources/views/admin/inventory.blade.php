@@ -14,11 +14,15 @@
     border-radius: 10px 10px 10px 10px;
     transition: top 0.2s;
     border: 1px solid #7b7b7b;
+    
   }
-
+  .wrap{
+     border-radius: 10px;
+      background-color: var(--navbar-dark-secondary);
+  }
   .container {
     position: absolute;
-    background-color: var(--navbar-dark-secondary);
+   
     top: 20px;
     height: auto;
     left: var(--navbar-width);
@@ -27,6 +31,7 @@
     /* Smooth transition */
     margin-left: 50px;
     font-family: "Signika", sans-serif;
+   
   }
 
   .container.navbar-closed {
@@ -108,6 +113,44 @@
   .edit {
     margin-right: 5px;
   }
+  @media (max-width: 768px) {
+        .container {
+        top: 70px;
+        left: 10px;
+        max-width: 97% !important;
+        margin-left: 0;
+       padding-bottom: 150px !important;
+    }
+    .title-container .page-title{
+      font-size: 1.25rem;
+    }
+    .content-bar{
+      font-size: .75rem;
+    }
+   
+  }
+  @media (max-width: 536px) {
+    
+   
+    .add-invent .add{
+      font-size: 13px;
+      padding: 5px 10px;
+
+
+    }
+    .title-container .page-desc{
+      font-size: .75rem;
+
+    }
+  }
+  .bot-inventory{
+        border-top: 2px solid #ffbd2e;
+
+  }
+  .content-overflow{
+    overflow-x: auto;
+  }
+  
 </style>
 <link rel="stylesheet" href="../css/inventory.css">
 <div id="nav-bar">
@@ -124,11 +167,11 @@
         </svg><span>Dashboard</span></a>
     </div>
 
-    <div class="nav-button">
+     <div class="nav-button">
             <a href="{{ url('admin-reservation') }}" style="text-decoration: none; color: inherit;" id="reservations-link">
                 <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
                     <path fill="none" stroke="#FFBD2E" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.5 21H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6M16 3v4M8 3v4m-4 4h16m-5 8l2 2l4-4" />
-                </svg></i><span>Reservations</span><span id="reservation-badge" class="badge bg-warning text-dark" style="display: none;">New</span>
+                </svg></i><span>Reservations</span><span id="admin-reservation-badge" class="badge bg-warning text-dark" style="display: none; border-radius: 50%;">0</span>
             </a>
         </div>
 
@@ -138,6 +181,10 @@
           <path fill="#ffbd2e" d="M20 2H4c-1 0-2 .9-2 2v3.01c0 .72.43 1.34 1 1.69V20c0 1.1 1.1 2 2 2h14c.9 0 2-.9 2-2V8.7c.57-.35 1-.97 1-1.69V4c0-1.1-1-2-2-2m-1 18H5V9h14zm1-13H4V4h16z" />
           <path fill="#ffbd2e" d="M9 12h6v2H9z" />
         </svg><span style="color: #FFBD2E;">Inventory</span></a>
+    </div>
+      <div class="nav-button"><a href="{{ url('sales') }}" style="text-decoration: none; color: inherit;">
+
+        <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 48 48"><g fill="none" stroke="#FFBD2E" stroke-linejoin="round" stroke-width="4"><path d="M41 14L24 4L7 14v20l17 10l17-10z"/><path stroke-linecap="round" d="M24 22v8m8-12v12m-16-4v4"/></g></svg><span>Sales</span></a>
     </div>
     <div class="nav-button"><a href="{{ url('wishlist') }}" style="text-decoration: none; color: inherit;">
 
@@ -178,7 +225,7 @@
       <button type="submit" style="background: none; border: none; color: #FFBD2E; cursor: pointer; font-size: 16px;">
         <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
           <path fill="#d39817" d="M5 11h8v2H5v3l-5-4l5-4zm-1 7h2.708a8 8 0 1 0 0-12H4a9.99 9.99 0 0 1 8-4c5.523 0 10 4.477 10 10s-4.477 10-10 10a9.99 9.99 0 0 1-8-4" />
-        </svg><span>Logout</span>
+        </svg><span id="footer-logout">Logout</span>
 
       </button>
     </form>
@@ -186,8 +233,9 @@
 
 </div>
 </div>
-<div class="container p-4 col-xl-9">
 
+<div class="container col-md col-xl-9">
+<div class="wrap p-4 ">
   <div class="headings-container">
     <div class="title-container">
       <div class="page-title" style="color: #FFBD2E">Inventory</div>
@@ -197,19 +245,20 @@
       <a class="add" href="{{ url('add_uniforms/')}}">Add uniform</a>
     </div>
   </div>
+  <div class="content-overflow">
   @forelse($data as $d)
-  @foreach($d->variations as $variation) <!-- Loop through each variation -->
-  @foreach($variation->sizes as $size) <!-- Loop through each size in the variation -->
+  @foreach($d->variations as $variation) 
+  @foreach($variation->sizes as $size) 
   <div class="content-bar">
     <div class="itemnum">#{{ $d->id }}</div>
     <div class="itemtitle">{{ $d->name }}</div>
-    <div class="itemvariation">{{ $variation->variation_type ?? 'N/A' }}</div> <!-- Variation color -->
-    <div class="itemsize">{{ $size->size ?? 'N/A'}}</div> <!-- Size for the variation -->
-    <div class="itemprice">${{ $d->price }}</div>
+    <div class="itemvariation">{{ $variation->variation_type ?? 'N/A' }}</div> 
+    <div class="itemsize">{{ $size->size ?? 'N/A'}}</div> 
+    <div class="itemprice">₱{{ $d->price }}</div>
     <div class="itemstock">{{ $size->stock ?? $d->stock ?? 'N/A'}} In Stock</div>
 
     <div class="btncontainer">
-      <div class="ed" style="background-color: #ffd37b">
+      <div class="ed">
         <a href="{{ url('edit-uniforms-form/' .$d->id)}}" style="color: #936d1b;">
           <svg class="edit" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
             <g class="edit-outline">
@@ -221,7 +270,7 @@
           </svg>Edit</a>
       </div>
 
-      <div class="ed del" style="background-color: #f58a8a" data-id="{{$d->id}}" data-sizeId="{{$size->id}}">
+      <div class="ed del" data-id="{{$d->id}}" data-sizeId="{{$size->id}}">
         <a href="javascript:void(0)" class="delete-button-2" style="color: #a80000;">
           <svg class="edit" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
             <g fill="none" stroke="#a80000" stroke-width="2">
@@ -258,11 +307,11 @@
     <div class="itemtitle">{{ $d->name }}</div>
     <div class="itemvariation">N/A</div> <!-- Variation color -->
     <div class="itemsize">N/A</div> <!-- Size for the variation -->
-    <div class="itemprice">${{ $d->price }}</div>
+    <div class="itemprice">₱{{ $d->price }}</div>
     <div class="itemstock">{{ $d->stock }} In Stock</div>
 
     <div class="btncontainer">
-      <div class="ed" style="background-color: #ffd37b">
+      <div class="ed">
         <a href="{{ url('edit-uniforms-form/' .$d->id)}}" style="color: #936d1b;">
           <svg class="edit" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
             <g class="edit-outline">
@@ -274,7 +323,7 @@
           </svg>Edit</a>
       </div>
 
-      <div class="ed" style="background-color: #f58a8a" data-id="{{$d->id}}">
+      <div class="ed del" data-id="{{$d->id}}">
         <a href="javascript:void(0)" class="delete-button" style="color: #a80000;">
           <svg class="edit" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
             <g fill="none" stroke="#a80000" stroke-width="2">
@@ -308,13 +357,73 @@
   <div style="color: #fff; margin-top: 50px">No Inventory</div>
   @endforelse
 
+</div>
 
+</div>
+</div>
 
+<div class="bottom-nav">
+    <div class="floating-nav">
+     <a class="bot-dashboard" href="{{ url('dashboard') }}" style="text-decoration: none; color: inherit;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
+                <path fill="none" stroke="#ffbd2e" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 4h4a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1m0 12h4a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1m10-4h4a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1m0-8h4a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1" />
+            </svg>
+      </a>
+
+     
+           <a class="bot-reservation" href="{{ url('admin-reservation') }}" style="text-decoration: none; color: inherit;" id="bot-reservations-link">
+                <div style="position: relative; display: inline-block;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
+                        <path fill="none" stroke="#FFBD2E" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.5 21H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6M16 3v4M8 3v4m-4 4h16m-5 8l2 2l4-4" />
+                    </svg>
+                    <span id="bot-admin-reservation-badge" class="badge bg-warning text-dark" style="position: absolute; top: -5px; right: -5px; border-radius: 50%; font-size: 9px; display: none;">0</span>
+                </div>
+            </a>
+     
+
+       <a class="bot-inventory" href="{{ url('inventory') }}" style="text-decoration: none; color: inherit;">
+
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
+                    <path fill="#ffbd2e" d="M20 2H4c-1 0-2 .9-2 2v3.01c0 .72.43 1.34 1 1.69V20c0 1.1 1.1 2 2 2h14c.9 0 2-.9 2-2V8.7c.57-.35 1-.97 1-1.69V4c0-1.1-1-2-2-2m-1 18H5V9h14zm1-13H4V4h16z" />
+                    <path fill="#ffbd2e" d="M9 12h6v2H9z" />
+                </svg></a>
+       
+        
+       <a class="bot-sales" href="{{ url('sales') }}" style="text-decoration: none; color: inherit;">
+
+        <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 48 48"><g fill="none" stroke="#FFBD2E" stroke-linejoin="round" stroke-width="4"><path d="M41 14L24 4L7 14v20l17 10l17-10z"/><path stroke-linecap="round" d="M24 22v8m8-12v12m-16-4v4"/></g></svg></a>
+    
+       <a class="bot-wishlist" href="{{ url('wishlist') }}" style="text-decoration: none; color: inherit;">
+
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
+                    <path fill="none" stroke="#ffbd2e" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19.071 13.142L13.414 18.8a2 2 0 0 1-2.828 0l-5.657-5.657A5 5 0 1 1 12 6.072a5 5 0 0 1 7.071 7.07" />
+                </svg>
+                </a>
+        
+       
+        </div>
 </div>
 
 
+@if(session('success'))
+<div class="success" style="display: flex;">
+    <div class="success__icon">
+      <svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="m12 1c-6.075 0-11 4.925-11 11s4.925 11 11 11 11-4.925 11-11-4.925-11-11-11zm4.768 9.14c.0878-.1004.1546-.21726.1966-.34383.0419-.12657.0581-.26026.0477-.39319-.0105-.13293-.0475-.26242-.1087-.38085-.0613-.11844-.1456-.22342-.2481-.30879-.1024-.08536-.2209-.14938-.3484-.18828s-.2616-.0519-.3942-.03823c-.1327.01366-.2612.05372-.3782.1178-.1169.06409-.2198.15091-.3027.25537l-4.3 5.159-2.225-2.226c-.1886-.1822-.4412-.283-.7034-.2807s-.51301.1075-.69842.2929-.29058.4362-.29285.6984c-.00228.2622.09851.5148.28067.7034l3 3c.0983.0982.2159.1748.3454.2251.1295.0502.2681.0729.4069.0665.1387-.0063.2747-.0414.3991-.1032.1244-.0617.2347-.1487.3236-.2554z" fill="#393a37" fill-rule="evenodd"></path></svg>
+    </div>
+    <div class="success__title">Inventory updated successfully!</div>
+    <div class="success__close"><svg height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="m15.8333 5.34166-1.175-1.175-4.6583 4.65834-4.65833-4.65834-1.175 1.175 4.65833 4.65834-4.65833 4.6583 1.175 1.175 4.65833-4.6583 4.6583 4.6583 1.175-1.175-4.6583-4.6583z" fill="#393a37"></path></svg></div>
+</div>
+@endif
 
 <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const successDiv = document.querySelector('.success');
+    if (successDiv) {
+        setTimeout(() => {
+            successDiv.style.display = 'none';
+        }, 3000); // Hide after 3 seconds
+    }
+});
   document.addEventListener('DOMContentLoaded', function () {
     const deleteButtons = document.querySelectorAll('.delete-button');
     const deleteButtons2 = document.querySelectorAll('.delete-button-2');
@@ -344,8 +453,8 @@
       button.addEventListener('click', function() {
         // Get the data-id from the closest .ed container
        
-         const idd = this.closest('.del').getAttribute('data-id');
-         const sizeId = this.closest('.del').getAttribute('data-sizeId');
+        const idd = this.closest('.del').getAttribute('data-id');
+        const sizeId = this.closest('.del').getAttribute('data-sizeId');
        
         const deleteUrl2 = '/delete-uniforms/' + idd + '/' + sizeId;
         

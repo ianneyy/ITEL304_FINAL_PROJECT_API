@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="icon" href="{{ asset('img/logo.png') }}" sizes="16x16" type="image/png">
+
     <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('css/uniforms.css') }}">
@@ -17,7 +19,9 @@
     <link rel="stylesheet" href="{{ asset('../css/message.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css" integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/laravel-echo/1.11.1/echo.iife.js"></script>
+<script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link
         rel="stylesheet"
@@ -33,8 +37,8 @@
 <body>
     <nav class="p-4">
         <div class="logo-title">
-            <img src="../img/lspu_logo.png" alt="">
-            <h3>Business Affair Office</h3>
+            <img src="{{asset('../img/lspu_logo.png')}}" alt="">
+            <div>Business Affair Office</div>
         </div>
         <ul>
 
@@ -93,6 +97,7 @@
                         <div class="cbx-img">
                             <div class="checkbox-wrapper-4">
                                 <input class="inp-cbx" id="morning{{$cart->id}}" type="checkbox" data-price="{{$cart->price}}" data-name="{{$cart->name}}" data-id="{{$cart->id}}" data-image="{{$cart->image_url}}" data-variation="{{$cart->variation_type}}" data-size="{{$cart->size}}" />
+
                                 <label class="cbx" for="morning{{$cart->id}}"><span>
                                         <svg width="12px" height="10px">
                                             <use xlink:href="#check-4"></use>
@@ -105,7 +110,7 @@
                                 </svg>
                             </div>
                             <div class="cart-img">
-                                <img src="../{{$cart->image_url}}" alt="">
+                                <img src="{{asset($cart->image_url)}}" alt="">
                             </div>
                         </div>
                         <div class="prdct-info">
@@ -120,7 +125,7 @@
                             <div class="qty">
                                 <span class="minus1">-</span>
                                 <!-- <span class="num" name="qty">01</span> -->
-                                <input type="number" id="qty{{$cart->id}}" name="qty" class="num1" value="{{$cart->qty}}">
+                                <input type="number" id="qty{{$cart->id}}" name="qty"  class="num1" value="{{$cart->qty}}">
                                 <span class="plus1">+</span>
 
                             </div>
@@ -136,7 +141,7 @@
                 </div>
                 @empty
                 <div class="empty-state" style="width: 400px; display:flex; flex-direction:column; align-items: center; justify-content: center;">
-                    <img src="../img/empty_cart.svg" alt="" style="height: 100px;">
+                    <img src="{{asset('img/empty_cart.svg')}}" alt="" style="height: 100px;">
                     <p style="color: #555;">Your cart is empty.</p>
                 </div>
                 @endforelse
@@ -164,7 +169,8 @@
     </form>
     <div class="wishlist-popup">
         <div class="wishlist-items">
-            <h5 class="cart-head mb-2 mt-2">Wishlist</h5>
+            <h5 class="cart-head mt-2">Wishlist</h5>
+            <p class="mb-2 mt-2" style=" margin-left: 20px; color: #555;">The admin will notify you if an item is restocked.</p>
             <hr>
             @forelse($wishlistData as $wishlist)
             <div class="wishlist-item-container mb-3">
@@ -172,7 +178,7 @@
                     <div class="cbx-img">
 
                         <div class="cart-img">
-                            <img src="../{{$wishlist->image_url}}" alt="">
+                            <img src="{{ asset($wishlist->image_url) }}" alt="">
                         </div>
                     </div>
                     <div class="prdct-info">
@@ -196,7 +202,7 @@
             </div>
             @empty
             <div class="empty-state" style="width: 400px; display:flex; flex-direction:column; align-items: center; justify-content: center;">
-                <img src="../img/empty_cart.svg" alt="" style="height: 100px;">
+                <img src="{{asset('img/empty_cart.svg')}}" alt="" style="height: 100px;">
                 <p style="color: #555;">Your wishlist is empty.</p>
             </div>
             @endforelse
@@ -209,28 +215,33 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/laravel-echo/1.11.1/echo.iife.js"></script>
     <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
-    <script>
+  
+    @yield('content')
+<script>
          
-    const echo = new Echo({
-        broadcaster: 'pusher',
-        key: '{{ env('PUSHER_APP_KEY') }}',
-        cluster: '{{ env('PUSHER_APP_CLUSTER') }}',
-        forceTLS: true,
+     var pusher = new Pusher('d4c2a81ab1c73989e152', {
+      cluster: 'ap1'
     });
 
-    // Listen for new reservations
-    echo.channel('reservations')
-        .listen('NewPendingReservation', (data) => {
-            document.getElementById('reservation-badge').style.display = 'inline-block';
-        });
+    var channel = pusher.subscribe('announcement');
+    channel.bind('student-announcement', function(data) {
+     
+    document.getElementById('reservation-badge').style.display = 'inline-block';
+    localStorage.setItem('announcementBadgeVisible', 'true');
+     
+    });
+    if (localStorage.getItem('announcementBadgeVisible') === 'true') {
+    document.getElementById('reservation-badge').style.display = 'inline-block';
+    } else {
+        document.getElementById('reservation-badge').style.display = 'none';
+    }
 
     // Reset badge on click
     document.getElementById('reservations-link').addEventListener('click', () => {
         document.getElementById('reservation-badge').style.display = 'none';
+        localStorage.setItem('announcementBadgeVisible', 'false');
     });
     </script>
-    @yield('content')
-
 
     <script>
         // function changeCartBorderColor() {
@@ -295,40 +306,29 @@
             }
         });
         document.addEventListener('DOMContentLoaded', function() {
-            const plus = document.querySelector(".plus1"),
-                minus = document.querySelector(".minus1"),
-                num = document.querySelector(".num1");
-            let a = 1;
+            const qtyContainers = document.querySelectorAll('.qty');
+            
+        qtyContainers.forEach(container => {
+            const plus = container.querySelector(".plus1"),
+                minus = container.querySelector(".minus1"),
+                num = container.querySelector(".num1");
+            
+            let value = parseInt(num.value) || 1;
+
             plus.addEventListener("click", () => {
-                a++;
-                a = a < 10 ? "0" + a : a;
-                num.value = a;
+                 value++;
+                num.value = value;
             });
 
             minus.addEventListener("click", () => {
-                if (a > 1) {
-                    a--;
-                    a = a < 10 ? "0" + a : a;
-                    num.value = a;
-                }
+                 if (value > 1) {
+                value--;
+                num.value = value;
+            }
             });
+        });
 
 
-
-            // const wishlistEditButtons = document.querySelectorAll('.wishlist-item-container .wishlist-edit-btn');
-
-            // // Loop through each button and add a click event listener
-            // wishlistEditButtons.forEach((btn, index) => {
-            //     btn.addEventListener('click', function() {
-            //         console.log('tite');
-            //         const container = this.closest('.wishlist-item-container');
-            //         container.classList.toggle('wishlist-edit-mode');
-            //     });
-            // });
-
-
-
-            // Optionally, you can add an event to close the popup when clicking outside of it
 
             document.querySelectorAll('.inp-cbx').forEach(checkbox => {
                 checkbox.addEventListener('change', updateTotalAmount);
@@ -349,7 +349,7 @@
                     // Fetch the correct quantity input for each item
                     const qtyElement = document.querySelector(`#qty${id}`);
 
-                    const qty = qtyElement ? parseInt(qtyElement.value) : 1; // Get quantity, default to 1 if not found
+                    const qty = qtyElement ? parseInt(qtyElement.value) : 1; 
                     const subTotal = price * qty;
                     totalAmount += price * qty;
 

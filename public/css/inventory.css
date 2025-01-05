@@ -1,5 +1,8 @@
 .content-bar{
-  width: calc(100% - 40px);
+  position: relative;
+   min-width: fit-content;
+    max-width: 100%;
+  
   margin-left:20px;
   margin-top:10px;
   background:#636363;
@@ -71,11 +74,7 @@ a{
 }
 
 @media only screen and (max-width: 1160px) {
-  body{
-    padding:0;
-    margin:0;
-    font-size:14px;
-  }
+
   .sidenav{
     height:100%;
     border-radius:0px;
@@ -87,11 +86,7 @@ a{
   }
 }
 @media only screen and (max-width: 780px) {
-  body{
-    padding:0;
-    margin:0;
-    font-size:13px;
-  }
+ 
   .sidenav{
     height:100%;
     border-radius:0px;
@@ -108,15 +103,8 @@ a{
   box-shadow: 0px 2px 10px 0px rgba(0,0,0,0.06);
   display:block;
 }
-  .content-bar{
-    grid-template-columns: 0fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  }
-  .itemprice{
-    display:none;
-  }
-  .itemstock{
-    display:none;
-  }
+  
+  
   .cbbtn{
   margin-top:5px;
     margin-right:5px;
@@ -132,7 +120,7 @@ a{
     display: flex;
     align-items: center;
 }
-.add{
+ .add{
     text-decoration: none;
     padding: 5px 25px 5px 25px;
     text-align: center;
@@ -141,6 +129,9 @@ a{
     background-color: #ffbd2e;
     color: #fefefe;
     border-radius: 5px;
+}
+.add:hover{
+  background-color: #E5AA29;
 }
 
 /* From Uiverse.io by vinodjangid07 */ 
@@ -165,6 +156,22 @@ a{
   transform: translate(-50%, -50%);
   box-shadow: 20px 20px 30px rgba(0, 0, 0, 0.068);
 }
+.ed{
+  background-color: #ffd37b;
+}
+.btncontainer .ed:hover{
+
+  background-color: #E5BD6E;
+}
+
+.ed.del{
+  background-color: #F58A8A;
+}
+.btncontainer .ed.del:hover{
+
+  background-color: #DC7C7C;
+}
+
 .card-content {
   width: 100%;
   height: fit-content;
@@ -246,4 +253,53 @@ a{
 .card.active {
   visibility: visible;
   opacity: 1;
+}
+.wrap{
+  padding-bottom: 150px;
+}
+
+.success {
+   
+    position: absolute;
+    z-index: 9999;
+    top: 80%;
+    left: 75%;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  width: 320px;
+  padding: 12px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: start;
+  background: #EDFBD8;
+  border-radius: 8px;
+  box-shadow: 0px 0px 5px -3px #111;
+  
+}
+
+.success__icon {
+  width: 20px;
+  height: 20px;
+  transform: translateY(-2px);
+  margin-right: 8px;
+}
+
+.success__icon path {
+  fill: #84D65A;
+}
+
+.success__title {
+  font-weight: 500;
+  font-size: 14px;
+  color: #2B641E;
+}
+
+.success__close {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.success__close path {
+  fill: #2B641E;
 }

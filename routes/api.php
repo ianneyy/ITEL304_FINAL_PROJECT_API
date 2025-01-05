@@ -17,3 +17,11 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+//API FOR LANDING PAGE
+Route::get('/requestLandingPage', [ApiUniformsController::class, 'apiShowUniforms']);
+
+
+require __DIR__."/adminApi.php";
+require __DIR__."/studentapi.php";

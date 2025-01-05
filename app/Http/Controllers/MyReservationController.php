@@ -38,5 +38,12 @@ class MyReservationController extends Controller
        
         $pastData = $pastData->reverse();
         return view('pages.reservation', compact('data', 'pastData'));
+        
+        // requesting info in the api
+        // $response = Http::get('http://127.0.0.1:8000/api/requestStudentReservation/' . $userId);   
+            
+        // $data_recieved = $response->json();
+
+        // return view('pages.reservation', compact('data_recieved'));
     }
 }

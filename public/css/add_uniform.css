@@ -96,7 +96,9 @@ textarea {
     background: #007bff;
     color: #fff;
 }
-
+#add-variation:hover{
+    color: #4281CB;
+}
 .add-btn {
     background-color: #28a745;
     color: white;
@@ -107,7 +109,9 @@ textarea {
     border-radius: 5px;
     cursor: pointer;
 }
-
+.submit-btn .subb:hover{
+    background-color: #E5BD6E;
+}
 .department {
     
     border: 1px solid #ddd;

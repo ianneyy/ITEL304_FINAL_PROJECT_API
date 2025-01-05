@@ -75,31 +75,47 @@ class UniformsController extends Controller
     // {
     //     //
     // }
+
+    public function showUniforms(){
+        $data = DB::table('products')->get();
+        return view('pages.uniforms', compact('data'));
+
+        // requesting info in the api
+        // $response = Http::get('http://127.0.0.1:8000/api/requestLandingPage');   
+         
+        // $data_recieved = $response->json();
+
+        // return view('pages.uniforms', compact('data_recieved'));
+    }
     
-      public function showUniformsTable(){
+    public function showUniformsTable(){
       
         $data = Product::with('variations.sizes')->get();
        
         return view('admin.inventory', compact('data'));
-    }
-    public function showUniforms(){
-        $data = DB::table('products')->get();
-        return view('pages.uniforms', compact('data'));
+
+        // requesting info in the api
+        // $response = Http::get('http://127.0.0.1:8000/api/requestAdminInventory');   
+         
+        // $data_recieved = $response->json();
+
+        // return view('admin.inventory', compact('data_recieved'));
     }
     
     public function showAddForm(){
-        return view('pages.add_uniforms');
+        return view('admin.add_uniforms');
     }
+
     public function addUniform(Request $request)
     {
-        
-        $path = null;
+        Log::info($request);
+        $imagePath = null;
         if ($request->has('image_url')) {
             $file = $request->file('image_url');
             $filename = $file->getClientOriginalName();
             $path = 'img/';
             $file->move($path, $filename);
-            Log::info('image uploaded');
+          
             $imagePath = $path . $filename;
         }
 
@@ -113,17 +129,40 @@ class UniformsController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
         $variations = $request->input('variations', []);
+
+        Log::info($variations);
+        Log::info($request->file('variations'));
         // Insert each variation with sizes
-        foreach ($variations as $variation) {
+        foreach ($variations as $index => $variation) {
+       
+             $imageFilePath = null;
+
+             if ($request->hasFile('variations.' . $index . '.sub_image_url')) {
+            $subfile = $request->file('variations.' . $index . '.sub_image_url');
+
+        if ($subfile->isValid()) {
+            $subfilename = time() . '_' . $subfile->getClientOriginalName();
+            $filepath = 'img/';
+
+            $subfile->move(public_path($filepath), $subfilename);
+            $imageFilePath = $filepath . $subfilename;
+        } else {
+            Log::warning('Invalid file uploaded for variation ' . $index);
+        }
+    }
+
             $productVariationId = DB::table('product_variations')->insertGetId([
                 'product_id' => $productId,
                 'variation_type' => $variation['variation-type'] ?? 'N/A',
+                'sub_image_url' => $imageFilePath, 
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-            log::info($productVariationId);
-            // Insert sizes for this variation
+
+
+          
             foreach ($variation['sizes'] as $key => $size) {
                
                 DB::table('product_variation_sizes')->insert([
@@ -137,8 +176,28 @@ class UniformsController extends Controller
         }
 
         return redirect(url('/inventory'));
+
+        // requesting info in the api
+        // $response = Http::post('http://127.0.0.1:8000/api/requestAdminAddUniform');   
+         
+        // $data_recieved = $response->json();
+
+        // return redirect(url('/inventory'));
     }
 
+    
+    public function showEditForm($id){
+        $data = Product::findOrFail($id);
+        
+        return view('admin.edit_uniforms', compact('data'));
+
+        // requesting info in the api
+        // $response = Http::post('http://127.0.0.1:8000/api/requestEditAdminUniformForm/' . $id);   
+         
+        // $data_recieved = $response->json();
+
+        // return view('admin.edit_uniforms', compact('data_recieved'));
+    }
 
     public function deleteUniforms($productId, $sizeId){
         // $imagePath = Uniforms::where('id', $id)->pluck('image_url')->first();
@@ -161,8 +220,30 @@ class UniformsController extends Controller
        
         
             return redirect(url('/inventory'));
-        
+
+        // requesting info in the api
+        // $response = Http::get('http://127.0.0.1:8000/api/requestAdminDeleteUniform/' . $productId . '/' . $sizeId');   
+         
+        // $data_recieved = $response->json();
+
+        // return redirect(url('/inventory'));
     }
+
+    public function cancelReservation($id){
+        DB::table('student_reservation')
+        ->where('id', $id)
+        ->update(['status' => 'cancelled']);
+
+        return redirect()->back()->with('success','Reservation cancelled successfully');
+    
+        // requesting info in the api
+        // $response = Http::get('http://127.0.0.1:8000/api/requestAdminDeleteUniform/' . $productId . '/' . $sizeId');   
+         
+        // $data_recieved = $response->json();
+
+        // return redirect()->back()->with('success','Reservation cancelled successfully');
+   }
+
     public function deleteProduct($productId)
     {
         $imagePath = Uniforms::where('id', $productId)->pluck('image_url')->first();
@@ -177,11 +258,7 @@ class UniformsController extends Controller
 
         return redirect(url('/inventory'));
     }
-    public function showEditForm($id){
-        $data = Product::findOrFail($id);
 
-        return view('admin.edit_uniforms', compact('data'));
-    }
     public function showDetails($id){
         $data = DB::table('products')
         ->where('id', $id)
@@ -199,8 +276,16 @@ class UniformsController extends Controller
         
         return view('pages.view_details', compact('data','deptData','sizeData'));
 
+        
+        // requesting info in the api
+        // $response = Http::get('http://127.0.0.1:8000/api/requestStudentShowUniformDetails/' . $id);   
+         
+        // $data_recieved = $response->json();
+
+        // return view('pages.view_details', compact('data_recieved'));
     
     }
+    
     public function showAnnouncement()
     {
         $data = DB::table('announcement')->get();
@@ -226,15 +311,29 @@ class UniformsController extends Controller
         });
 
         return view('pages.announcement', compact('data'));
+
+        // requesting info in the api
+        // $response = Http::get('http://127.0.0.1:8000/api/requestStudentAnnouncement');   
+         
+        // $data_recieved = $response->json();
+
+        // return view('pages.announcement', compact('data_recieved'));
     }
     public function showMessageForm(){
         $userId = Auth::guard('student')->id();
+
         $student = DB::table('students')
         ->where('id', $userId) // Match the ID with the authenticated user's ID
         ->get();
 
         return view('pages.contact_us', compact('student'));
 
+        // requesting info in the api
+        // $response = Http::get('http://127.0.0.1:8000/api/requestStudentShowMessageForm/' . $userId);   
+         
+        // $data_recieved = $response->json();
+
+        // return view('pages.contact_us', compact('student'));
 
     }
     public function addMessage(Request $request){
@@ -266,10 +365,5 @@ class UniformsController extends Controller
         }
        
     }
-   public function cancelReservation($id){
-    DB::table('student_reservation')->where('id', $id)->delete();
-
-    return redirect()->back()->with('success','Reservation cancelled successfully');
-   }
 
 }

@@ -8,6 +8,7 @@
     <title>LSPU - BAO Login</title>
     <link rel="stylesheet" href="{{ asset('css/user_login.css') }}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
 </head>
 
 <body>
@@ -20,11 +21,12 @@
             </div>
             <p class="welcome-message">SIGN-IN TO YOUR LSPU ACCOUNT</p>
         </div>
+
         <div class="login-section">
             <div class="logo">
                 <img src="{{ asset('img/logo.png') }}" alt="LSPU Logo" />
             </div>
-            <h2>LSPU - BAO</h2>
+            <h2 style="color: #FFBD2E;">LSPU - BAO</h2>
             <form method="POST" action="{{ route('student.user-login') }}">
                 @csrf
                 <div class="input-group">
@@ -35,7 +37,7 @@
                     @enderror
                 </div>
                 <div class="input-group">
-                    <label for="password">Password</label>
+                    <label for="password" style="margin-top: 15px;">Password</label>
                     <div class="password-wrapper">
                         <input type="password" id="password" name="password" placeholder="Enter your password" required />
                         <span id="toggle-password" class="toggle-password">
@@ -46,7 +48,7 @@
                     <p class="error-message">{{ $message }}</p>
                     @enderror
                 </div>
-                <button type="submit" class="login-button">Login</button>
+                <button type="submit" class="login-button" style="margin-top: 15px; background-color: #FFBD2E;">Login</button>
             </form>
             <a href="#" class="forgot-password">Forgot Password?</a>
         </div>

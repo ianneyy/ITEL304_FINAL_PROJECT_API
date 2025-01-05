@@ -19,3 +19,7 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('reservations', function ($user) {
     return true; // Authentication logic if needed
 });
+
+Broadcast::channel('announcement', function ($user) {
+    return true; // Authentication logic if needed
+}); 

@@ -18,11 +18,10 @@
 
     .container {
         position: absolute;
-        background-color: var(--navbar-dark-secondary);
+        
         top: 20px;
         left: var(--navbar-width);
         height: auto;
-
         /* Adjust left based on sidebar width */
         transition: width 0.3s ease, left 0.3s ease;
         /* Smooth transition */
@@ -129,10 +128,22 @@
     .invent h5 {
         color: var(--navbar-light-primary);
     }
+  .dataTables_length{
+        margin-bottom: 20px;     
+    }
+    .dataTables_filter{
+        margin-bottom: 20px;
+        
+    }
+    .ed{
+  background-color: #ffd37b;
+}
+.action .ed:hover{
 
+  background-color: #E5BD6E;
+}
     #pendingReservations_length {
         color: var(--navbar-light-secondary);
-        margin-bottom: 20px;
     }
 
     #pendingReservations_length select option {
@@ -161,6 +172,8 @@
 
     #completedReservations_length {
         color: var(--navbar-light-secondary);
+     
+
     }
 
     #completedReservations_length select option {
@@ -176,6 +189,7 @@
 
     #completedReservations_filter {
         color: var(--navbar-light-secondary);
+        
     }
 
     #completedReservations_info {
@@ -185,6 +199,86 @@
     #completedReservations_paginate {
         color: #fefefe;
     }
+
+
+
+
+     #cancelledReservations_length {
+        color: var(--navbar-light-secondary);
+        
+
+    }
+
+    #cancelledReservations_length select option {
+        background-color: var(--navbar-dark-secondary);
+        color: var(--navbar-light-primary);
+
+    }
+
+    #cancelledReservations_length select {
+        background-color: var(--navbar-dark-secondary);
+        color: var(--navbar-light-primary);
+    }
+
+    #cancelledReservations_filter {
+        color: var(--navbar-light-secondary);
+    }
+
+    #cancelledReservations_info {
+        color: var(--navbar-light-secondary);
+    }
+
+    #cancelledReservations_paginate {
+        color: #fefefe;
+    }
+@media (max-width: 987px) {
+    .container {
+        max-width: 85%;
+    }
+     .overflow{
+        overflow-x: auto;
+
+    }
+}
+    @media (max-width: 768px) {
+        .container {
+        top: 70px;
+        left: 10px;
+        max-width: 100%;
+        margin-left: 0;
+    }
+    .overflow{
+        overflow-x: auto;
+
+    }
+    .container .recent-activity{
+         width: 95%;
+         padding: 1rem !important;
+    }
+    th{
+        font-size: .75em;
+    }
+    tbody td{
+        font-size: .75em;
+
+    }
+    .dataTables_length{
+        float: left !important;
+
+        
+    }
+    .dataTables_filter{
+        float: right !important;
+        text-align: right !important;
+        margin-top: 0 !important; 
+        
+    }
+    
+    }
+    .bot-reservation{
+        border-top: 2px solid #ffbd2e;
+       
+     }
 </style>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
 <!-- <link href="../DataTables/datatables.min.css" rel="stylesheet"> -->
@@ -202,11 +296,11 @@
                 </svg><span>Dashboard</span></a>
         </div>
 
-        <div class="nav-button">
-            <a href="{{ url('admin_reservation') }}" style="text-decoration: none; color: inherit;">
+       <div class="nav-button">
+            <a href="{{ url('admin-reservation') }}" style="text-decoration: none; color: inherit;" id="reservations-link">
                 <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
                     <path fill="none" stroke="#FFBD2E" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.5 21H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6M16 3v4M8 3v4m-4 4h16m-5 8l2 2l4-4" />
-                </svg></i><span style="color: #FFBD2E;">Reservations</span><span id="reservation-badge" class="badge bg-warning text-dark" style="display: none;">New</span>
+                </svg></i><span style="color: #FFBD2E;">Reservations</span><span id="admin-reservation-badge" class="badge bg-warning text-dark" style="display: none; border-radius: 50%;">0</span>
             </a>
         </div>
 
@@ -217,6 +311,10 @@
                     <path fill="#ffbd2e" d="M9 12h6v2H9z" />
                 </svg><span>Inventory</span></a>
         </div>
+         <div class="nav-button"><a href="{{ url('sales') }}" style="text-decoration: none; color: inherit;">
+
+        <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 48 48"><g fill="none" stroke="#FFBD2E" stroke-linejoin="round" stroke-width="4"><path d="M41 14L24 4L7 14v20l17 10l17-10z"/><path stroke-linecap="round" d="M24 22v8m8-12v12m-16-4v4"/></g></svg><span>Sales</span></a>
+    </div>
         <div class="nav-button"><a href="{{ url('wishlist') }}" style="text-decoration: none; color: inherit;">
 
                 <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
@@ -255,7 +353,7 @@
             <button type="submit" style="background: none; border: none; color: #FFBD2E; cursor: pointer; font-size: 16px;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
                     <path fill="#d39817" d="M5 11h8v2H5v3l-5-4l5-4zm-1 7h2.708a8 8 0 1 0 0-12H4a9.99 9.99 0 0 1 8-4c5.523 0 10 4.477 10 10s-4.477 10-10 10a9.99 9.99 0 0 1-8-4" />
-                </svg><span>Logout</span>
+                </svg><span id="footer-logout">Logout</span>
 
             </button>
         </form>
@@ -263,19 +361,26 @@
 
 </div>
 </div>
-<div class="container p-5 col-xl-9">
+<div class="container  col-xl-9 ">
+    <div class="rsv-title mt-4 ms-4 ">
+        <h4 style="color:#FFBD2E">Student Reservations</h4>
+        <p style="color: #cdcdcd">View and manage student reservation</p>
+    </div>
+    <div class="recent-activity p-5">
+
     <div class="invent">
         <h5 class="mb-5" style="color:#FFBD2E">Pending Reservation</h5>
 
 
     </div>
+    <div class="overflow">
     <table class="table" id="pendingReservations">
         <thead>
             <tr>
                 <th style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;">#</th>
                 <th>Student Name</th>
                 <th>Email</th>
-                <th>Uniform Type</th>
+                <th>Item Name</th>
                 <th>Variation</th>
                 <th>Size</th>
                 <th>Price</th>
@@ -288,7 +393,7 @@
         <tbody>
             @forelse($data as $d)
             <tr>
-                <td>{{ $d->id }}</td>
+                <td>{{ $loop->iteration }}</td>
                 <td>{{ $d->full_name }}</td>
                 <td>{{ $d->email }}</td>
                 <td>{{ $d->name }}</td>
@@ -297,10 +402,10 @@
                 <td>{{ $d->total_price }}</td>
                 <td>{{ $d->qty }}</td>
                 <td>{{ $d->reservation_date}}</td>
-                <td>{{ $d->status}}</td>
+                <td> <span class="badge bg-secondary">{{ $d->status }}</span></td>
                 <td style=" width:80px;">
                     <div class="action" style=" width:60px;">
-                        <div class="ed px-3" style="background-color: #ffd37b"><a href="{{ url('paid-reservation/' .$d->id)}}" style="color: #936d1b;">Paid</a></div>
+                        <div class="ed px-3"><a href="{{ url('paid-reservation/' .$d->id)}}" style="color: #936d1b;">Confirm</a></div>
                     </div>
                 </td>
             </tr>
@@ -317,17 +422,22 @@
             @endforelse
         </tbody>
     </table>
+   </div>
+</div>
+    <div class="recent-activity p-5 mt-5">
     <div class="invent">
         <h5 class="my-4" style="color:#FFBD2E">Completed Reservation</h5>
 
 
     </div>
+    <div class="overflow">
     <table class="table my-8" id="completedReservations">
         <thead>
             <tr>
-                <th style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;">Student Name</th>
+                <th style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;">#</th>
+                <th>Student Name</th>
                 <th>Email</th>
-                <th>Uniform Type</th>
+                <th>Item Name</th>
                 <th>Variation</th>
                 <th>Size</th>
                 <th>Price</th>
@@ -339,6 +449,7 @@
         <tbody>
             @forelse($completedData as $completed)
             <tr>
+                <td>{{ $loop->iteration }}</td>
                 <td>{{ $completed->full_name }}</td>
                 <td>{{ $completed->email }}</td>
                 <td>{{ $completed->name }}</td>
@@ -347,7 +458,7 @@
                 <td>{{ $completed->total_price }}</td>
                 <td>{{ $completed->qty }}</td>
                 <td>{{ $completed->reservation_date}}</td>
-                <td style=" width:80px;">{{ $completed->status }}</td>
+                <td style=" width:80px;"> <span class="badge bg-success">{{ $completed->status }}</span></td>
             </tr>
             @empty
             <table class="no-data" style="display: flex; justify-content: center; align-items: center;">
@@ -362,6 +473,103 @@
             @endforelse
         </tbody>
     </table>
+    </div>
+    </div>
+
+    <div class="recent-activity p-5 mt-5">
+    <div class="invent">
+        <h5 class="my-4" style="color:#FFBD2E">Cancelled Reservation</h5>
+
+
+    </div>
+    <div class="overflow">
+
+    <table class="table my-8" id="cancelledReservations">
+        <thead>
+            <tr>
+                <th style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;">#</th>
+                <th>Student Name</th>
+                <th>Email</th>
+                <th>Item Name</th>
+                <th>Variation</th>
+                <th>Size</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Reservation Date</th>
+                <th style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($cancelledData as $cancelled)
+            <tr>
+                <td>{{ $loop->iteration }}</td>
+                <td>{{ $cancelled->full_name }}</td>
+                <td>{{ $cancelled->email }}</td>
+                <td>{{ $cancelled->name }}</td>
+                <td>{{ $cancelled->department }}</td>
+                <td>{{ $cancelled->size }}</td>
+                <td>{{ $cancelled->total_price }}</td>
+                <td>{{ $cancelled->qty }}</td>
+                <td>{{ $cancelled->reservation_date}}</td>
+                <td style=" width:80px;"> <span class="badge bg-danger">{{ $cancelled->status }}</span></td>
+            </tr>
+            @empty
+            <table class="no-data" style="display: flex; justify-content: center; align-items: center;">
+                <tr>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <img src="../img/no_data.svg" alt="No Data" class="nodata-image" style="max-width: 100px; height: auto;  margin-top: 50px;">
+                        <p style="margin-top: 10px; color: #888;">Empty.</p>
+                    </td>
+                </tr>
+            </table>
+
+            @endforelse
+        </tbody>
+    </table>
+    </div>
+    </div>
+</div>
+
+<div class="bottom-nav">
+    <div class="floating-nav">
+     <a class="bot-dashboard" href="{{ url('dashboard') }}" style="text-decoration: none; color: inherit;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
+                <path fill="none" stroke="#ffbd2e" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 4h4a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1m0 12h4a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1m10-4h4a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1m0-8h4a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1" />
+            </svg>
+      </a>
+
+     
+          <a class="bot-reservation" href="{{ url('admin-reservation') }}" style="text-decoration: none; color: inherit;" id="bot-reservations-link">
+                <div style="position: relative; display: inline-block;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
+                        <path fill="none" stroke="#FFBD2E" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.5 21H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6M16 3v4M8 3v4m-4 4h16m-5 8l2 2l4-4" />
+                    </svg>
+                    <span id="bot-admin-reservation-badge" class="badge bg-warning text-dark" style="position: absolute; top: -5px; right: -5px; border-radius: 50%; font-size: 9px; display: none;">0</span>
+                </div>
+            </a>
+     
+
+       <a class="bot-inventory" href="{{ url('inventory') }}" style="text-decoration: none; color: inherit;">
+
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
+                    <path fill="#ffbd2e" d="M20 2H4c-1 0-2 .9-2 2v3.01c0 .72.43 1.34 1 1.69V20c0 1.1 1.1 2 2 2h14c.9 0 2-.9 2-2V8.7c.57-.35 1-.97 1-1.69V4c0-1.1-1-2-2-2m-1 18H5V9h14zm1-13H4V4h16z" />
+                    <path fill="#ffbd2e" d="M9 12h6v2H9z" />
+                </svg></a>
+       
+        
+       <a class="bot-sales" href="{{ url('sales') }}" style="text-decoration: none; color: inherit;">
+
+        <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 48 48"><g fill="none" stroke="#FFBD2E" stroke-linejoin="round" stroke-width="4"><path d="M41 14L24 4L7 14v20l17 10l17-10z"/><path stroke-linecap="round" d="M24 22v8m8-12v12m-16-4v4"/></g></svg></a>
+    
+       <a class="bot-wishlist" href="{{ url('wishlist') }}" style="text-decoration: none; color: inherit;">
+
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
+                    <path fill="none" stroke="#ffbd2e" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19.071 13.142L13.414 18.8a2 2 0 0 1-2.828 0l-5.657-5.657A5 5 0 1 1 12 6.072a5 5 0 0 1 7.071 7.07" />
+                </svg>
+                </a>
+        
+       
+        </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
@@ -370,6 +578,7 @@
     $(document).ready(function() {
         $('#pendingReservations').DataTable();
         $('#completedReservations').DataTable();
+        $('#cancelledReservations').DataTable();
     });
 </script>
 <script>

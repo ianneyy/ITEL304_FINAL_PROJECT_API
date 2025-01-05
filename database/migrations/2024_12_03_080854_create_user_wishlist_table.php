@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('students')->onDelete('cascade');
             $table->string('image_url');
             $table->string('name');
+            $table->boolean('notified')->default(false);
             $table->string('variation_type')->nullable();
             $table->string('size')->nullable();
             $table->timestamps();

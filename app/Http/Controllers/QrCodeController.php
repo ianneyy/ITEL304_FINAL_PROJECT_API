@@ -31,6 +31,13 @@ class QrCodeController extends Controller
         ->where('order_id', $orderId)
         ->get();
         return view('pages.success', compact('data', 'getOrderId', 'qrCodePath'));
+
+      // requesting info in the api
+      // $response = Http::get('http://127.0.0.1:8000/api/requestStudentShowQr/' . $userId);   
+        
+      // $data_recieved = $response->json();
+
+      // return view('pages.success', compact('data_recieved'));
    }
    public function showQrCodebyID($id)
    {
@@ -58,8 +65,15 @@ class QrCodeController extends Controller
       ->where('id', $id)
       ->get();
       return view('pages.success', compact('data', 'getOrderId', 'qrCodePath'));
-   }
-   public function show(Request $request){
 
+      // requesting info in the api
+      // $response = Http::get('http://127.0.0.1:8000/api/requestStudentViewQr/' . $userId . '/' . $id);   
+        
+      // $data_recieved = $response->json();
+
+      // return view('pages.success', compact('data_recieved'));
    }
+      public function show(Request $request){
+
+      }
 }

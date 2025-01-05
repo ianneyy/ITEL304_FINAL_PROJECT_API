@@ -1,0 +1,45 @@
+ td,
+    th {
+        border: none;
+
+        text-align: center;
+    }
+
+    .container table th, .container table td {
+        text-align: center;
+
+        /* Horizontally center the content */
+        vertical-align: middle;
+
+        /* Vertically center the content */
+    }
+
+    .container table {
+        border-collapse: collapse;
+
+        margin-bottom: 20px;
+    }
+
+    .container table th {
+        background-color: var(--navbar-dark-primary);
+
+        color: var(--navbar-light-secondary);
+    }
+    td:last-child {
+        width: 190px;
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    .container table tbody td {
+        background-color: var(--navbar-dark-secondary);
+        color: var(--navbar-light-primary);
+
+    }
+    .sales-stats{
+        display: flex;
+        gap: 20px;
+        
+    }

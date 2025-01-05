@@ -15,7 +15,7 @@
         integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
         crossorigin="anonymous"
         referrerpolicy="no-referrer" />
-
+<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 </head>
 
 <body>
@@ -102,6 +102,8 @@
                                                             min="{{$minDateFormatted}}"
                                                             max="{{$maxDateFormatted}}"
                                                             required>
+                                                        
+
 
                                                     </div>
 
@@ -122,24 +124,14 @@
                                     <div class="feed-item-list">
                                         <div>
                                             <h5 class="font-size-16 mb-1">Payment Info</h5>
-                                            <p class="text-muted text-truncate mb-4">Please select your mode of payment</p>
+                                           
                                         </div>
                                         <div>
-                                            <h5 class="font-size-14 mb-3">Payment method :</h5>
+                                          
                                             <div class="row">
 
 
-                                                <div class="col-lg-3 col-sm-6">
-                                                    <div>
-                                                        <label class="card-radio-label">
-                                                            <input type="radio" name="pay_method" value="Paypal" id="pay-methodoption2" class="card-radio-input">
-                                                            <span class="card-radio py-3 text-center text-truncate">
-                                                                <i class="bx bxl-paypal d-block h2 mb-3"></i>
-                                                                Paypal
-                                                            </span>
-                                                        </label>
-                                                    </div>
-                                                </div>
+                                            
 
                                                 <div class="col-lg-3 col-sm-6">
                                                     <div>
@@ -163,7 +155,7 @@
                     </div>
 
                     <div class="row my-4">
-                        <div class="col">
+                        <div class="col go-back">
                             <a href="{{url('continue-shopping/' . $d->id )}}" class="btn btn-link text-muted">
                                 <i class="mdi mdi-arrow-left me-1"></i> Go Back </a>
                         </div> <!-- end col -->
@@ -171,7 +163,7 @@
                             <div class="text-end mt-2 mt-sm-0">
                                 <!-- <a href="#" class="proceed-btn" style="background-color: #FFBD2E">
                                 <i class="mdi mdi-cart-outline me-1"></i> Proceed </a> -->
-                                <button onclick="proceedPayment()" class="proceed-btn" style="background-color: #FFBD2E">Proceed</button>
+                                <button onclick="proceedPayment()" class="proceed-btn" style="">Proceed</button>
                             </div>
                         </div> <!-- end col -->
                     </div> <!-- end row-->
@@ -270,12 +262,6 @@
 
         document.getElementById("pop").style.display = "block";
 
-        // Simulate payment processing (use actual payment logic here)
-        setTimeout(function() {
-            // Hide the loading overlay after a delay (simulating the payment processing time)
-            document.getElementById("pop").style.display = "none";
-            alert("Payment Completed!");
-        }, 3000); // Adjust time as needed
     }
 </script>
 

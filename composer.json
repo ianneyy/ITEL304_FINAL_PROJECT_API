@@ -2,12 +2,16 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "keywords": [
+        "framework",
+        "laravel"
+    ],
     "license": "MIT",
     "require": {
-        "php": "^8.0.2",
+        "php": "^8.2.12",
+        "nesbot/carbon": "^2.53.1",
         "guzzlehttp/guzzle": "^7.2",
-        "laravel/framework": "^9.19",
+        "laravel/framework": "v9.52.18",
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "pusher/pusher-php-server": "^7.2",

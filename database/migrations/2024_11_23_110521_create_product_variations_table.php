@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('product_variations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->string('variation_type')->nullable();  // Added color field
+            $table->string('sub_image_url')->nullable();
+            $table->string('variation_type')->nullable();  
             $table->timestamps();
         });
     }

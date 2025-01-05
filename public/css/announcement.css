@@ -10,7 +10,7 @@
 }
 .date-time{
     display: flex;
-    width: 160px;
+    width: 260px;
     flex-direction: column;
     justify-content: center;
     border-right: 1px solid rgb(179, 179, 179);
