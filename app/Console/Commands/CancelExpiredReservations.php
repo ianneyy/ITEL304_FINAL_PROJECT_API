@@ -5,17 +5,18 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use Log;
+use Illuminate\Support\Facades\Log;
+
 class CancelExpiredReservations extends Command
 {
-   
+
     protected $signature = 'reservations:reschedule-expired';
 
-   
+
     protected $description = 'Reschedule reservations where the reservation date has passed';
 
 
-       public function __construct()
+    public function __construct()
     {
         parent::__construct();
     }
@@ -42,9 +43,8 @@ class CancelExpiredReservations extends Command
             $this->info("Reservation {$reservation->id} rescheduled to $nextAvailableDate.");
         }
         Log::info("Change Date");
-        
     }
-     protected function findNextAvailableDate($reservation)
+    protected function findNextAvailableDate($reservation)
     {
         // Example logic: find the next day (you can customize this)
         $nextDate = Carbon::parse($reservation->reservation_date)->addDay();
@@ -55,11 +55,12 @@ class CancelExpiredReservations extends Command
         }
         // Optionally, check if the next date is available (not already taken)
         while (DB::table('student_reservation')
-                ->where('reservation_date', $nextDate->toDateString())
-                ->exists()) {
+            ->where('reservation_date', $nextDate->toDateString())
+            ->exists()
+        ) {
             // If the date is already taken, move to the next day
             $nextDate->addDay();
-             if ($nextDate->isSaturday()) {
+            if ($nextDate->isSaturday()) {
                 $nextDate->addDays(2); // Move to Monday
             } elseif ($nextDate->isSunday()) {
                 $nextDate->addDay(); // Move to Monday

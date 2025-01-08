@@ -4,8 +4,6 @@ namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -16,11 +14,11 @@ class Announcement implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $announcement;
-   public function __construct($announcement)
+    public function __construct($announcement)
     {
         Log::info('Broadcasting event: ', ['announcement' => $this->announcement]);
-        
-         $this->announcement = $announcement;
+
+        $this->announcement = $announcement;
     }
     public function broadcastOn()
     {
@@ -28,6 +26,6 @@ class Announcement implements ShouldBroadcast
     }
     public function broadcastAs()
     {
-       return 'student-announcement';
+        return 'student-announcement';
     }
 }

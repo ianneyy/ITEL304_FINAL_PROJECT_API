@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -21,7 +20,7 @@ class ReplyToMessage extends Mailable
      *
      * @return void
      */
-    public function __construct($replyMessage, $senderName, $senderEmail,$userMessage)
+    public function __construct($replyMessage, $senderName, $senderEmail, $userMessage)
     {
         $this->replyMessage = $replyMessage;
         $this->senderName = $senderName;

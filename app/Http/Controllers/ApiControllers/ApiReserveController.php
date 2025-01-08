@@ -1,12 +1,11 @@
 <?php
 
 namespace App\Http\Controllers\ApiControllers;
+
 use Illuminate\Support\Facades\Auth;
 use App\Events\NewPendingReservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use App\Models\Uniforms;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -23,18 +22,18 @@ class ApiReserveController extends Controller
 
         // Fetch the department name
         $variationName = DB::table('product_variations')
-        ->where('id', $request->input('department'))
-        ->value('variation_type');
+            ->where('id', $request->input('department'))
+            ->value('variation_type');
 
         // Fetch the size name
         $sizeName = DB::table('product_variation_sizes')
-        ->where('id', $request->input('size'))
-        ->value('size');
+            ->where('id', $request->input('size'))
+            ->value('size');
 
         // Fetch the student data based on the authenticated user's ID
         $student = DB::table('students')
-        ->where('id', $userId)
-        ->first();
+            ->where('id', $userId)
+            ->first();
 
         if (!$student) {
             Log::warning('Student not found for user_id: ' . $userId);
@@ -42,7 +41,6 @@ class ApiReserveController extends Controller
                 'status' => 'error_noUser',
                 'message' => 'Student not found'
             ]);
-            
         }
 
         // Proceed if student exists
@@ -55,61 +53,60 @@ class ApiReserveController extends Controller
         // Handle "reserve_now" action
         if ($request->action == 'reserve_now') {
             $query = DB::table('reservation')
-            ->insertGetId([
-                'user_id' => $userId,
-                'order_id' => $orderId,   
-                'full_name' => $fullName,
-                'email' => $email,
-                'name' => $request->input('name'),
-                'price' => $request->input('price'),
-                'image_url' => $request->input('image_url'),
-                'variation_type' => $variationName,
-                'size' => $sizeName,
-                'subTotal' => $totalPrice,
-                'qty' => $request->input('qty'),
-                'total_price' => $totalPrice
-            ]);
+                ->insertGetId([
+                    'user_id' => $userId,
+                    'order_id' => $orderId,
+                    'full_name' => $fullName,
+                    'email' => $email,
+                    'name' => $request->input('name'),
+                    'price' => $request->input('price'),
+                    'image_url' => $request->input('image_url'),
+                    'variation_type' => $variationName,
+                    'size' => $sizeName,
+                    'subTotal' => $totalPrice,
+                    'qty' => $request->input('qty'),
+                    'total_price' => $totalPrice
+                ]);
 
             if ($query) {
                 return response()->json([
-                  'status' => 'success',
-                  'message' => 'The item has been reserved'
-                ]); 
+                    'status' => 'success_reservation',
+                    'message' => 'The item has been reserved'
+                ]);
             }
         }
 
         // Handle "add_to_cart" action
         elseif ($request->action == 'add_to_cart') {
             $query = DB::table('cart')
-            ->insertGetId([
-                'user_id' => $userId,
-                'image_url' => $request->input('image_url'),
-                'name' => $request->input('name'),
-                'price' => $request->input('price'),
-                'variation_type' => $variationName,
-                'size' => $sizeName,
-                'qty' => $request->input('qty'),
-                'total_price' => $totalPrice
-            ]);
+                ->insertGetId([
+                    'user_id' => $userId,
+                    'image_url' => $request->input('image_url'),
+                    'name' => $request->input('name'),
+                    'price' => $request->input('price'),
+                    'variation_type' => $variationName,
+                    'size' => $sizeName,
+                    'qty' => $request->input('qty'),
+                    'total_price' => $totalPrice
+                ]);
 
-            
+
 
             if ($query) {
                 // Ensure you redirect to the cart page or another desired location
-                return respons()->json([
+                return response()->json([
                     'status' => 'cart_success',
                     'message' => 'true'
                 ]);
             } else {
                 return response()->json([
-                    'status' => 'error',
+                    'status' => 'cart_error',
                     'message' => 'Failed to add to cart.'
                 ]);
             }
-        }
-         elseif ($request->action == 'add_to_wishlist') {
+        } elseif ($request->action == 'add_to_wishlist') {
 
-            
+
             $name = $request->input('name');
 
             DB::table('user_wishlist')->insert([
@@ -118,20 +115,20 @@ class ApiReserveController extends Controller
                 'image_url' => $request->input('image_url'),
                 'variation_type' => $variationName,
                 'size' => $sizeName,
-                
+
             ]);
 
             $existingWishlist = DB::table('wishlist')
-           
-            ->where('name', $name)
-            ->where('variation_type', $variationName)
-            ->where('size', $sizeName)
-            ->first();
+
+                ->where('name', $name)
+                ->where('variation_type', $variationName)
+                ->where('size', $sizeName)
+                ->first();
             if ($existingWishlist) {
                 // If it exists, increment the count
                 $query = DB::table('wishlist')
-                ->where('id', $existingWishlist->id)
-                ->increment('count', 1);
+                    ->where('id', $existingWishlist->id)
+                    ->increment('count', 1);
             } else {
                 // If it doesn't exist, insert a new entry
                 $query = DB::table('wishlist')->insert([
@@ -139,7 +136,7 @@ class ApiReserveController extends Controller
                     'name' => $name,
                     'variation_type' => $variationName,
                     'size' => $sizeName,
-                    'count' => 1 
+                    'count' => 1
                 ]);
             }
 
@@ -148,19 +145,20 @@ class ApiReserveController extends Controller
             if ($query) {
                 // Ensure you redirect to the cart page or another desired location
                 return response()->json([
-                    'status' => 'success',
+                    'status' => 'success_wishlist',
                     'message' => 'Item added to wishlist.'
                 ]);
-            } 
+            }
         }
     }
 
-    public function sendToFillUpForm(Request $request){
+    public function sendToFillUpForm(Request $request)
+    {
         $userId = Auth::guard('student')->id();
 
         $student = DB::table('students')
-        ->where('id', $userId)
-        ->first();
+            ->where('id', $userId)
+            ->first();
 
         $fullName = $student->name;
         $email = $student->email;
@@ -171,7 +169,7 @@ class ApiReserveController extends Controller
 
         foreach ($selectedItems as $item) {
 
-           
+
 
             // Insert each item into the reservation table
             DB::table('reservation')->insert([
@@ -191,33 +189,35 @@ class ApiReserveController extends Controller
                 'updated_at' => now(),
             ]);
             DB::table('cart')
-            ->where('id',$item['id'])
-            ->where('user_id', $userId)
-            
-            ->update([
-            'cart_id' => $uniqueCartId, 
-            'updated_at' => now()]);
+                ->where('id', $item['id'])
+                ->where('user_id', $userId)
+
+                ->update([
+                    'cart_id' => $uniqueCartId,
+                    'updated_at' => now()
+                ]);
         }
         return redirect(url('/fill-up-form'));
     }
 
 
-    public function apiShowReserve(){
+    public function apiShowReserve()
+    {
         $latestId = DB::table('reservation')
-        ->orderBy('id', 'desc') 
-        ->value('id');
+            ->orderBy('id', 'desc')
+            ->value('id');
 
         $orderId = DB::table('reservation')
-        ->where('id', $latestId)
-        ->value('order_id');
+            ->where('id', $latestId)
+            ->value('order_id');
 
         $count = DB::table('student_reservation')
-        ->where('status', 'pending')
-        ->count();
+            ->where('status', 'pending')
+            ->count();
 
         $count = DB::table('student_reservation')
-        ->where('status', 'pending')
-        ->count();
+            ->where('status', 'pending')
+            ->count();
         // $minDate = ($count > 1) ? now()->addDay()->format('Y-m-d') : now()->format('Y-m-d');
 
         $threshold = 1;
@@ -236,7 +236,7 @@ class ApiReserveController extends Controller
 
             // Check the reservation count for this specific date
             $dateCount = DB::table('student_reservation')
-            ->whereDate('reservation_date', $minDate->format('Y-m-d')) // Adjust column name if needed
+                ->whereDate('reservation_date', $minDate->format('Y-m-d')) // Adjust column name if needed
                 ->where('status', 'pending')
                 ->count();
 
@@ -252,9 +252,9 @@ class ApiReserveController extends Controller
 
         $maxDate = $minDate->copy()->addDays(7);
         while ($maxDate->isWeekend()) {
-            $maxDate->subDay(); 
+            $maxDate->subDay();
         }
-        
+
         $minDateFormatted = $minDate->format('Y-m-d');
         Log::info($minDateFormatted);
         $maxDateFormatted = $maxDate->format('Y-m-d');
@@ -262,34 +262,35 @@ class ApiReserveController extends Controller
 
 
         $getOrderId  = DB::table('reservation')
-        ->where('order_id', $orderId) // Filter by order_id
-        ->get();
+            ->where('order_id', $orderId) // Filter by order_id
+            ->get();
         $userId = Auth::guard('student')->id();
 
         $getCartId  = DB::table('cart')
-        ->where('user_id', $userId)
-        ->whereNotNull('cart_id')
-        ->get();
+            ->where('user_id', $userId)
+            ->whereNotNull('cart_id')
+            ->get();
 
-        
+
         $data = DB::table('reservation')
-        ->where('id', $latestId)
-        ->get();
+            ->where('id', $latestId)
+            ->get();
         return response()->json([
             'data' => $data,
             'minDateFormatted' => $minDateFormatted,
-            'maxDateFormatted' => $maxDateFormatted, 
-            'getOrderId' => $getOrderId, 
+            'maxDateFormatted' => $maxDateFormatted,
+            'getOrderId' => $getOrderId,
             'getCartId' => $getCartId
         ]);
     }
 
-    public function apiContinueShopping($id){
-        $query =DB::table('reservation')
-        ->where('id', $id)
-        ->delete();
-        
-        if($query){
+    public function apiContinueShopping($id)
+    {
+        $query = DB::table('reservation')
+            ->where('id', $id)
+            ->delete();
+
+        if ($query) {
             return response()->json([
                 'status' => 'success',
                 'message' => 'reservation has been cancelled'
@@ -299,7 +300,7 @@ class ApiReserveController extends Controller
 
     public function apiAddReserve(Request $request, $userId)
     {
-      
+
 
         $fullName = $request->input('full_name');
         $email = $request->input('email');
@@ -327,7 +328,7 @@ class ApiReserveController extends Controller
             $reservationId =  DB::table('student_reservation')->insertGetId([
                 'user_id' => $userId,
                 'order_id' => $orderId,
-                'qrcode_id' => $qrCodeId, 
+                'qrcode_id' => $qrCodeId,
                 'full_name' => $fullName,
                 'email' => $email,
                 'contact_number' => $contactNumber,
@@ -340,7 +341,7 @@ class ApiReserveController extends Controller
                 'reservation_date' => $reservationDate,
                 'pay_method' => $payMethod,
                 'created_at' => now()
-                        
+
             ]);
 
             event(new NewPendingReservation($reservation));
@@ -353,13 +354,13 @@ class ApiReserveController extends Controller
             if ($product) {
                 // Check if the product has variations
                 $variation = DB::table('product_variations')
-                ->where('product_id', $product->id)
+                    ->where('product_id', $product->id)
                     ->first();
 
                 if ($variation && isset($reservation['size'])) {
                     // Decrement stock in product_variation_sizes
                     DB::table('product_variation_sizes')
-                    ->where('product_variation_id', $variation->id)
+                        ->where('product_variation_id', $variation->id)
                         ->where('size', $reservation['size'])
                         ->decrement('stock', $reservation['qty']);
                 } else {
@@ -369,27 +370,22 @@ class ApiReserveController extends Controller
                         ->decrement('stock', $reservation['qty']);
                 }
             }
-          
-           
         }
-      
+
         $cartId = $request->input('cart_id');
         if (!empty($cartId)) {
             DB::table('cart')
-            ->where('cart_id', $cartId)
-            ->orderBy('updated_at', 'asc')
+                ->where('cart_id', $cartId)
+                ->orderBy('updated_at', 'asc')
                 ->delete();
         } else {
-           
+
             Log::error('Cart ID is empty or invalid.');
         }
-    
+
         return response()->json([
             'status' => 'success',
             'message' => 'new reservation has been added'
         ]);
     }
-   
-  
-    
 }

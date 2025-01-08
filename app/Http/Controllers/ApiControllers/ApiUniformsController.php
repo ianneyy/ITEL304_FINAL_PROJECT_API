@@ -4,20 +4,13 @@ namespace App\Http\Controllers\ApiControllers;
 
 use App\Models\Uniforms;
 use Illuminate\Http\Request;
-use App\Http\Requests\StorePostRequest;
 use Illuminate\Support\Facades\DB;
-use App\Http\Requests\UpdatePostRequest;
-use App\Models\Student;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Product;
-use App\Models\ProductVariation;
-use App\Models\ProductVariationSize;
 use App\Http\Controllers\Controller;
-
+use Error;
 
 class ApiUniformsController extends Controller
 {
@@ -75,40 +68,32 @@ class ApiUniformsController extends Controller
     // {
     //     //
     // }
-    
-    public function apiShowUniforms(){
+
+    public function apiShowUniforms()
+    {
         $data = DB::table('products')->get();
         return response()->json(['data' => $data]);
     }
 
-    public function apiShowUniformTable(){
-      
+    public function apiShowUniformTable()
+    {
+
         $data = Product::with('variations.sizes')->get();
-       
+
         return response()->json(['data' => $data]);
     }
-    
-    public function showAddForm(){
+
+    public function showAddForm()
+    {
         return view('pages.add_uniforms');
     }
 
     // gotta fix this
     public function apiAddUniform(Request $request)
     {
-        Log::info($request);
-        $imagePath = null;
-        if ($request->has('image_url')) {
-            $file = $request->file('image_url');
-            $filename = $file->getClientOriginalName();
-            $path = 'img/';
-            $file->move($path, $filename);
-          
-            $imagePath = $path . $filename;
-        }
-
         // Insert product
         $productId = DB::table('products')->insertGetId([
-            'image_url' => $imagePath,
+            'image_url' => $request->input('image_url'),
             'name' => $request->input('product_name'),
             'description' => $request->input('description'),
             'price' => $request->input('price'),
@@ -119,12 +104,12 @@ class ApiUniformsController extends Controller
 
         $variations = $request->input('variations', []);
 
-        Log::info($variations);
+        Log::info($request->input('image_url'));
         Log::info($request->file('variations'));
         // Insert each variation with sizes
         foreach ($variations as $index => $variation) {
-       
-            $imageFilePath = null;
+
+            $imageFilePath = $request->input('imagePath');
 
             if ($request->hasFile('variations.' . $index . '.sub_image_url')) {
                 $subfile = $request->file('variations.' . $index . '.sub_image_url');
@@ -143,15 +128,15 @@ class ApiUniformsController extends Controller
             $productVariationId = DB::table('product_variations')->insertGetId([
                 'product_id' => $productId,
                 'variation_type' => $variation['variation-type'] ?? 'N/A',
-                'sub_image_url' => $imageFilePath, 
+                'sub_image_url' => $imageFilePath,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
 
-          
+
             foreach ($variation['sizes'] as $key => $size) {
-               
+
                 DB::table('product_variation_sizes')->insert([
                     'product_variation_id' => $productVariationId,
                     'size' => $size ?? 'N/A',
@@ -161,20 +146,17 @@ class ApiUniformsController extends Controller
                 ]);
             }
         }
-
-        return response()->json([
-            'message' => 'New Uniform has been added',
-            'productId' => $productId
-        ]);
     }
 
-    public function apiShowEditForm($id){
+    public function apiShowEditForm($id)
+    {
         $data = Product::findOrFail($id);
-        
+
         return response()->json(['data' => $data]);
     }
 
-    public function apiDeleteUniforms($productId, $sizeId){
+    public function apiDeleteUniforms($productId, $sizeId)
+    {
         // $imagePath = Uniforms::where('id', $id)->pluck('image_url')->first();
         // File::delete($imagePath);
 
@@ -192,12 +174,11 @@ class ApiUniformsController extends Controller
         }
 
 
-       
+
 
         return response()->json([
             'message' => 'Available uniform has been deleted successfully',
         ]);
-        
     }
 
     public function deleteProduct($productId)
@@ -209,38 +190,38 @@ class ApiUniformsController extends Controller
 
         // Optionally, delete the image if no variations or sizes are left for the product
 
-
-
-
-        return redirect(url('/inventory'));
+        return response()->json([
+            'status' => 'success',
+            'message' => 'The product has been deleted successfully'
+        ]);
     }
 
-    public function apiShowDetails($id){
+    public function apiShowDetails($id)
+    {
         $data = DB::table('products')
-        ->where('id', $id)
-        ->get();
+            ->where('id', $id)
+            ->get();
 
-         $deptData = DB::table('product_variations')
-        ->where('product_id', $id)
-        ->get();
+        $deptData = DB::table('product_variations')
+            ->where('product_id', $id)
+            ->get();
         $variationIds = $deptData->pluck('id');
         $sizeData = DB::table('product_variation_sizes')
-        ->whereIn('product_variation_id', $variationIds) // Match against variation IDs
-        ->get();  // Get both 'id' and 'size'
+            ->whereIn('product_variation_id', $variationIds) // Match against variation IDs
+            ->get();  // Get both 'id' and 'size'
 
         $sizeData = $sizeData->unique('size');
-        
+
         return response()->json([
             'data' => $data,
             'deptData' => $deptData,
             'sizeData' => $sizeData
         ]);
-    
     }
     public function apiShowAnnouncement()
     {
         $data = DB::table('announcement')->get();
-        
+
         $data = $data->reverse();
         // Format the announcement_date for each entry
         $data = $data->map(function ($announcement) {
@@ -265,18 +246,18 @@ class ApiUniformsController extends Controller
             'data' => $data
         ]);
     }
-    public function apiShowMessageForm($userId){
+    public function apiShowMessageForm($userId)
+    {
         $student = DB::table('students')
-        ->where('id', $userId) // Match the ID with the authenticated user's ID
-        ->get();
+            ->where('id', $userId) // Match the ID with the authenticated user's ID
+            ->get();
 
         return response()->json([
             'student' => $student
         ]);
-
-
     }
-    public function apiAddMessage(Request $request){
+    public function apiAddMessage(Request $request)
+    {
 
         Log::info('Incoming request to addMessage', $request->all());
 
@@ -294,27 +275,22 @@ class ApiUniformsController extends Controller
             'updated_at' => now(),
         ]);
 
-        if($query){
-
-        
+        if ($query) {
             return response()->json([
                 'messsage' => 'The message has been sent successfully'
             ]);
-        }
-        else
-        {
+        } else {
             Log::error('engk');
         }
-       
     }
-   public function apiCancelReservation($id){
+    public function apiCancelReservation($id)
+    {
         DB::table('student_reservation')
-        ->where('id', $id)
-        ->update(['status' => 'cancelled']);
+            ->where('id', $id)
+            ->update(['status' => 'cancelled']);
 
         return response()->json([
             'message' => 'The Item reservation has been cancel'
         ]);
-   }
-
+    }
 }

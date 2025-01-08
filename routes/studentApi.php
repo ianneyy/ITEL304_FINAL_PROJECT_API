@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\ApiControllers\ApiWishlistController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiControllers\ApiMyReservationController;
 use App\Http\Controllers\ApiControllers\ApiUniformsController;
@@ -8,9 +8,11 @@ use App\Http\Controllers\ApiControllers\ApiQrCodeController;
 use App\Http\Controllers\ApiControllers\ApiReserveController;
 
 
-Route::get('/requestStudentShowUniformDetails/{id}', [ApiUniformsController::class, 'apiShowDetails'] );
+Route::get('/requestStudentDeleteWishList/{id}', [ApiWishlistController::class, 'apiDeleteWishlist']);
 
-Route::post('/requestStudentToCartWishlistUniform/{userId}', [ApiReserveController::class, 'apiReserve'] );
+Route::get('/requestStudentShowUniformDetails/{id}', [ApiUniformsController::class, 'apiShowDetails']);
+
+Route::post('/requestStudentToCartWishlistUniform/{userId}', [ApiReserveController::class, 'apiReserve']);
 
 Route::get('/requestStudentShowReserveRequest', [ApiReserveController::class, 'apiShowReserve']);
 
@@ -23,7 +25,7 @@ Route::get('/qrcode-scanner/{id}', [ApiQrCodeController::class, 'apiShow'])->nam
 
 Route::get('/requestStudentShowQr/{userId}', [ApiQrCodeController::class, 'apiShowQrCode']);
 
-Route::get('/requestStudentReservation/{userId}', [ ApiMyReservationController::class, 'apiShowMyReservation']);
+Route::get('/requestStudentReservation/{userId}', [ApiMyReservationController::class, 'apiShowMyReservation']);
 
 Route::get('/requestStudentCancelUniform/{id}', [ApiUniformsController::class, 'apiCancelReservation']);
 

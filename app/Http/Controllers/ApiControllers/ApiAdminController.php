@@ -2,19 +2,12 @@
 
 namespace App\Http\Controllers\ApiControllers;
 
-use App\Models\Admin;
-use App\Http\Requests\StoreAdminRequest;
-use App\Http\Requests\UpdateAdminRequest;
-use App\Models\Uniforms;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReplyToMessage;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Product;
 use App\Events\Announcement;
 use App\Http\Controllers\Controller;
@@ -178,8 +171,8 @@ class ApiAdminController extends Controller
 
         if ($query) {
             return response()->json([
+                'status' => 'success',
                 'message' => 'Reservation updated successfully',
-                'query' => $query
             ]);
         }
     }
@@ -326,6 +319,7 @@ class ApiAdminController extends Controller
 
         // Redirect with success message
         return response()->json([
+            'status' => 'success',
             'message' => "The $name has been updated successfully"
         ]);
     }
@@ -335,7 +329,10 @@ class ApiAdminController extends Controller
         $query = DB::table('student_reservation')->where('id', $id)->update([
             'status' => 'completed'
         ]);
-        return response()->json(['success' => true]);
+
+        if ($query) {
+            return response()->json(['success' => true]);
+        }
     }
 
     public function apiAddAnnouncement(Request $request)
@@ -420,11 +417,8 @@ class ApiAdminController extends Controller
         // $senderName = $request->input('name');
 
 
-
-
         // Send the reply email
         Mail::to($email)->send(new ReplyToMessage($replyMessage, $senderName, $email, $userMessage));
-
 
         // Optionally, return a success response
         return response()->json([
